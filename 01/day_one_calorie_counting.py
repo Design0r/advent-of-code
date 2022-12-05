@@ -41,6 +41,7 @@ To play, please identify yourself via one of these services:"""
 
 from typing import List
 
+
 def importCalories(file: str) -> List[List[int]]:
     all_elf_calories = []
     elf_calories = []
@@ -60,6 +61,7 @@ def importCalories(file: str) -> List[List[int]]:
         all_elf_calories.append(elf_calories)
 
     return all_elf_calories
+
 
 def getMostCalorieElf(elf_list: List[List[int]], elf_num: int) -> int:
     calorie_list = []
