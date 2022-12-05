@@ -61,24 +61,23 @@ def importCalories(file: str) -> List[List[int]]:
 
     return all_elf_calories
 
-def getMostCalorieElf(elf_list: List[List[int]]) -> str:
-    calorie_sum = []
+def getMostCalorieElf(elf_list: List[List[int]], elf_num: int) -> int:
+    calorie_list = []
 
     for elf in elf_list:
         calories = 0
         for food in elf:
             calories += food
 
-        calorie_sum.append(calories)
+        calorie_list.append(calories)
 
-    elf_food_sum_sorted = calorie_sum.copy()
-    elf_food_sum_sorted.sort()
-    elf_num = calorie_sum.index(elf_food_sum_sorted[-1])
+    calorie_list.sort(reverse=True)
+    calorie_sum = sum(calorie_list[:elf_num])
 
-    return f"The Elf with the Most Calories is Elf Nr. {elf_num + 1} with {calorie_sum[elf_num]} Calories"
+    return calorie_sum
 
 
 if __name__ == '__main__':
-    print(getMostCalorieElf(importCalories("01_input.txt")))
+    print(getMostCalorieElf(importCalories("01_input.txt"), 3))
 
 
