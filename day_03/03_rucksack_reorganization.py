@@ -41,7 +41,7 @@ upperCaseAlphabet = [x.upper() for x in lowerCaseAlphabet]
 def partOne():
     comp_1, comp_2 = [], []
 
-    with open("03_input.txt") as file:
+    with open("input.txt") as file:
         for line in file.readlines():
             comp_1.append(line[:len(line) // 2].replace("\n", ""))
             comp_2.append(line[len(line) // 2:].replace("\n", ""))
@@ -62,7 +62,7 @@ def partOne():
 def partTwo():
     elf_groups = []
 
-    with open("03_input.txt") as file:
+    with open("input.txt") as file:
         count = 0
         temp_list = []
         for line in file.readlines():

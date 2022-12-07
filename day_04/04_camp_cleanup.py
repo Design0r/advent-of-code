@@ -1,5 +1,5 @@
 def main():
-    with open("04_input.txt") as file:
+    with open("input.txt") as file:
         # foreach row
         total_count = 0
         partial_count = 0

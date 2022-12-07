@@ -42,7 +42,7 @@ Win - 6
 
 p1_inputs = []
 p2_inputs = []
-with open("02_input.txt") as file:
+with open("input.txt") as file:
     for line in file.readlines():
         p1, p2 = line.split(" ")
         p2 = p2.replace("\n", "")
@@ -122,6 +122,9 @@ def partTwo():
                 score += 6 + 1
                 print(f"Scissors - Rock. Win, 6+3 Points. Score: {score}")
     print(score)
+
+
+
 
 
 if __name__ == '__main__':

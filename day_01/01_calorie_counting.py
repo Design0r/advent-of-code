@@ -80,6 +80,6 @@ def getMostCalorieElf(elf_list: List[List[int]], elf_num: int) -> int:
 
 
 if __name__ == '__main__':
-    print(getMostCalorieElf(importCalories("01_input.txt"), 3))
+    print(getMostCalorieElf(importCalories("input.txt"), 3))
 
 
