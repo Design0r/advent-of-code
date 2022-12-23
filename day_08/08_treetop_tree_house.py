@@ -30,7 +30,7 @@ class Forest:
     def getTrees(self) -> List[Tree]:
         return self._trees
 
-    def getInsideTrees(self):
+    def getInsideTrees(self) -> List[Tree]:
         return [x for x in self.getTrees() if 0 < x.getPosition()[0] < self.getHeight() and 0 < x.getPosition()[1] < self.getWidth()]
 
     def getWidth(self) -> int:
@@ -57,12 +57,21 @@ class Forest:
             return visibility
 
         tree_pos = tree.getPosition()
-        horizontal_list = [x for x in self.getTrees() if x.getPosition()[0] == tree_pos[0] and x.getPosition()[1] < tree_pos[1]]
-        reversed_horizontal_list = [x for x in self.getTrees() if x.getPosition()[0] == tree_pos[0] and x.getPosition()[1] > tree_pos[1]][::-1]
-        vertical_list = [x for x in self.getTrees() if x.getPosition()[1] == tree_pos[1] and x.getPosition()[0] < tree_pos[0]]
-        reversed_vertical_list = [x for x in self.getTrees() if x.getPosition()[1] == tree_pos[1] and x.getPosition()[0] > tree_pos[0]][::-1]
+        horizontal_list = []
+        vertical_list = []
 
-        if loop(vertical_list) or loop(reversed_vertical_list) or loop(horizontal_list) or loop(reversed_horizontal_list):
+        for x in self.getTrees():
+            if x.getPosition()[0] == tree_pos[0]:
+                horizontal_list.append(x)
+            if x.getPosition()[1] == tree_pos[1]:
+                vertical_list.append(x)
+
+        horizontal_left = horizontal_list[:tree.getPosition()[1]]
+        horizontal_right = horizontal_list[tree.getPosition()[1] + 1:]
+        vertical_left = vertical_list[:tree.getPosition()[0]]
+        vertical_right = vertical_list[tree.getPosition()[0] + 1:]
+
+        if loop(horizontal_left) or loop(horizontal_right) or loop(vertical_left) or loop(vertical_right):
             return True
         else:
             return False
@@ -89,4 +98,4 @@ if __name__ == '__main__':
         if forest.checkVisibility(i):
             count += 1
 
-    print(f"Number of visible Trees: {count + (2 * forest.getWidth()) + (2 * forest.getHeight())} found in {end_time-time.time()}s")
+    print(f"Number of visible Trees: {count + (2 * forest.getWidth()) + (2 * forest.getHeight())} found in {time.time()-start_time}s")
