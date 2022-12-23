@@ -68,13 +68,55 @@ class Forest:
 
         horizontal_left = horizontal_list[:tree.getPosition()[1]]
         horizontal_right = horizontal_list[tree.getPosition()[1] + 1:]
-        vertical_left = vertical_list[:tree.getPosition()[0]]
-        vertical_right = vertical_list[tree.getPosition()[0] + 1:]
+        vertical_top = vertical_list[:tree.getPosition()[0]]
+        vertical_bottom = vertical_list[tree.getPosition()[0] + 1:]
 
-        if loop(horizontal_left) or loop(horizontal_right) or loop(vertical_left) or loop(vertical_right):
+        if loop(horizontal_left) or loop(horizontal_right) or loop(vertical_top) or loop(vertical_bottom):
             return True
         else:
             return False
+
+    def checkScene(self, tree: Tree) -> int:
+        def loop(array: List[Tree]) -> int:
+            scene_score = 0
+            print("array", [x.getHeight() for x in array])
+            if tree.getHeight() > array[0].getHeight():
+                scene_score += 1
+                for idx, i in enumerate(array):
+                    if idx > 0:
+                        if i.getHeight() > array[idx-1].getHeight():
+                            print(f"height: {i.getHeight()} > {array[idx - 1].getHeight()}")
+                            scene_score += 1
+                if array[-1].getHeight() > array[-2].getHeight():
+                    pass
+
+            else:
+                scene_score += 1
+
+            return scene_score
+
+        tree_pos = tree.getPosition()
+        horizontal_list = []
+        vertical_list = []
+
+        for x in self.getTrees():
+            if x.getPosition()[0] == tree_pos[0]:
+                horizontal_list.append(x)
+            if x.getPosition()[1] == tree_pos[1]:
+                vertical_list.append(x)
+
+        horizontal_left = horizontal_list[:tree.getPosition()[1]][::-1]
+        horizontal_right = horizontal_list[tree.getPosition()[1] + 1:][::-1]
+        vertical_top = vertical_list[:tree.getPosition()[0]][::-1]
+        vertical_bottom = vertical_list[tree.getPosition()[0] + 1:][::-1]
+
+        print([x.getHeight() for x in horizontal_left], tree.getHeight(), [x.getHeight() for x in horizontal_right])
+
+        print([x.getHeight() for x in vertical_top], tree.getHeight(), [x.getHeight() for x in vertical_bottom])
+
+        print(loop(horizontal_right), loop(horizontal_left), loop(vertical_top), loop(vertical_bottom))
+
+        return loop(horizontal_right) * loop(horizontal_left) * loop(vertical_top) * loop(vertical_bottom)
 
 
 if __name__ == '__main__':
@@ -99,3 +141,5 @@ if __name__ == '__main__':
             count += 1
 
     print(f"Number of visible Trees: {count + (2 * forest.getWidth()) + (2 * forest.getHeight())} found in {time.time()-start_time}s")
+    #print(f"The highest scenic score is: {max([forest.checkScene(x) for x in forest.getTrees()])}")
+    print(f"The highest scenic score is: {max([forest.checkScene(x) for x in forest.getTrees() if x.getPosition() == (1, 2)])}")
