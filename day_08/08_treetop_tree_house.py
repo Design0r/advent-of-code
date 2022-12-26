@@ -41,9 +41,9 @@ class Forest:
     def getHeight(self) -> int:
         return self._height
 
-    def calculateForestDimensions(self):
-        self._width = max([tree.getPosition()[1] for tree in self.getTrees()])
-        self._height = max([tree.getPosition()[0] for tree in self.getTrees()])
+    def setDimensions(self, width, height):
+        self._width = width
+        self._height = height
 
     def checkVisibility(self, tree: Tree) -> bool:
         def loop(array: List[Tree]) -> bool:
@@ -68,10 +68,10 @@ class Forest:
             if x.getPosition()[1] == tree_pos[1]:
                 vertical_list.append(x)
 
-        horizontal_left = horizontal_list[:tree.getPosition()[1]]
-        horizontal_right = horizontal_list[tree.getPosition()[1] + 1:]
-        vertical_top = vertical_list[:tree.getPosition()[0]]
-        vertical_bottom = vertical_list[tree.getPosition()[0] + 1:]
+        horizontal_left = horizontal_list[:tree_pos[1]]
+        horizontal_right = horizontal_list[tree_pos[1] + 1:]
+        vertical_top = vertical_list[:tree_pos[0]]
+        vertical_bottom = vertical_list[tree_pos[0] + 1:]
 
         if loop(horizontal_left) or loop(horizontal_right) or loop(vertical_top) or loop(vertical_bottom):
             return True
@@ -99,10 +99,10 @@ class Forest:
             if x.getPosition()[1] == tree_pos[1]:
                 vertical_list.append(x)
 
-        horizontal_left = horizontal_list[:tree.getPosition()[1]][::-1]
-        horizontal_right = horizontal_list[tree.getPosition()[1] + 1:]
-        vertical_top = vertical_list[:tree.getPosition()[0]][::-1]
-        vertical_bottom = vertical_list[tree.getPosition()[0] + 1:]
+        horizontal_left = horizontal_list[:tree_pos[1]][::-1]
+        horizontal_right = horizontal_list[tree_pos[1] + 1:]
+        vertical_top = vertical_list[:tree_pos[0]][::-1]
+        vertical_bottom = vertical_list[tree_pos[0] + 1:]
 
         return loop(horizontal_right) * loop(horizontal_left) * loop(vertical_top) * loop(vertical_bottom)
 
@@ -114,13 +114,12 @@ if __name__ == '__main__':
     forest = Forest()
 
     # add trees to forest
-    input = open("input.txt").read()
-    for line_idx, line in enumerate(input.split("\n")):
-        for char_idx, char in enumerate(line):
-            forest.addTree(Tree(char, (line_idx, char_idx)))
+    input = open("input.txt").read().split("\n")
+    forest.setDimensions(len(input) - 1, len(input[0]) - 1)
 
-    # calculate forest dimensions
-    forest.calculateForestDimensions()
+    for row_idx, line in enumerate(input):
+        for column_idx, height in enumerate(line):
+            forest.addTree(Tree(height, (row_idx, column_idx)))
 
     # check visibility for all inside Trees
     count = 0
