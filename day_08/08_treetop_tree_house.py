@@ -1,5 +1,6 @@
 from typing import List
 import time
+from multiprocessing import Pool
 
 
 class Tree:
@@ -108,7 +109,7 @@ class Forest:
 
 
 if __name__ == '__main__':
-    start_time = time.time()
+    start_time = time.perf_counter()
 
     # create new forest
     forest = Forest()
@@ -121,12 +122,13 @@ if __name__ == '__main__':
         for column_idx, height in enumerate(line):
             forest.addTree(Tree(height, (row_idx, column_idx)))
 
-    # check visibility for all inside Trees
-    count = 0
-    for i in forest.getInsideTrees():
-        if forest.checkVisibility(i):
-            count += 1
+    with Pool() as pool:
+        count = sum([1 for i in pool.imap_unordered(forest.checkVisibility, forest.getInsideTrees(), chunksize=400) if i])
 
-    print(f"Number of visible Trees: {count + (2 * forest.getWidth()) + (2 * forest.getHeight())} found in {time.time()-start_time}s")
-    start_time = time.time()
-    print(f"The highest scenic score is: {max([forest.checkScene(x) for x in forest.getInsideTrees()])} found in {time.time()-start_time}s")
+    print(f"Number of visible Trees: {count + (2 * forest.getWidth()) + (2 * forest.getHeight())} found in {time.perf_counter()-start_time:.3f}s")
+
+    start_time = time.perf_counter()
+    with Pool() as pool:
+        max = max([r for r in pool.imap_unordered(forest.checkScene, forest.getInsideTrees(), chunksize=400)])
+
+    print(f"The highest scenic score is: {max} found in {time.perf_counter()-start_time:.3f}s")
