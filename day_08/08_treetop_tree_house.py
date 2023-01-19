@@ -122,13 +122,13 @@ if __name__ == '__main__':
         for column_idx, height in enumerate(line):
             forest.addTree(Tree(height, (row_idx, column_idx)))
 
-    with Pool() as pool:
-        count = sum([1 for i in pool.imap_unordered(forest.checkVisibility, forest.getInsideTrees(), chunksize=400) if i])
+    with Pool(32) as pool:
+        count = sum([1 for i in pool.imap_unordered(forest.checkVisibility, forest.getInsideTrees(), chunksize=300) if i])
 
     print(f"Number of visible Trees: {count + (2 * forest.getWidth()) + (2 * forest.getHeight())} found in {time.perf_counter()-start_time:.3f}s")
 
     start_time = time.perf_counter()
-    with Pool() as pool:
-        max = max([r for r in pool.imap_unordered(forest.checkScene, forest.getInsideTrees(), chunksize=400)])
+    with Pool(32) as pool:
+        max = max([r for r in pool.imap_unordered(forest.checkScene, forest.getInsideTrees(), chunksize=300)])
 
     print(f"The highest scenic score is: {max} found in {time.perf_counter()-start_time:.3f}s")

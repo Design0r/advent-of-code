@@ -78,5 +78,4 @@ if __name__ == '__main__':
                 for i in range(num):
                     head_pos_row += 1
                     moveTail(tail_knots)
-
     print(f"tail count: {getTailCount()}, found in {time.time()-start_time}s")

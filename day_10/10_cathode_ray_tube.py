@@ -1,3 +1,8 @@
+import os
+import time
+
+console_colors = {"green": "\033[92m", "red": '\033[91m', "end": '\033[0m'}
+
 cycle = 0
 draw_cycle = 0
 register = 1
@@ -44,9 +49,13 @@ for line in file:
         checkCycle()
         register += int(line.split(" ")[-1])
 
-
+os.system("color")
 print(f"Part 1 Solution: {result}")
 
 print(f"Part 2 Solution:")
 for i in range(0, len(crt_screen), 40):
-    print(" ".join(crt_screen[i:i + 40]))
+    for j in "".join(crt_screen[i:i + 40]):
+        sign = f"{console_colors.get('red')}{j}{console_colors.get('end')}" if j == "#" else f"{console_colors.get('green')}{j}{console_colors.get('end')}"
+        print(sign, end=" ")
+        time.sleep(.01)
+    print("")
