@@ -115,7 +115,7 @@ if __name__ == '__main__':
     forest = Forest()
 
     # add trees to forest
-    input = open("input.txt").read().split("\n")
+    input = open("day_08/input.txt").read().split("\n")
     forest.setDimensions(len(input) - 1, len(input[0]) - 1)
 
     for row_idx, line in enumerate(input):
@@ -123,12 +123,16 @@ if __name__ == '__main__':
             forest.addTree(Tree(height, (row_idx, column_idx)))
 
     with Pool(32) as pool:
-        count = sum([1 for i in pool.imap_unordered(forest.checkVisibility, forest.getInsideTrees(), chunksize=300) if i])
+        count = sum([1 for i in pool.imap_unordered(
+            forest.checkVisibility, forest.getInsideTrees(), chunksize=300) if i])
 
-    print(f"Number of visible Trees: {count + (2 * forest.getWidth()) + (2 * forest.getHeight())} found in {time.perf_counter()-start_time:.3f}s")
+    print(
+        f"Number of visible Trees: {count + (2 * forest.getWidth()) + (2 * forest.getHeight())} found in {time.perf_counter()-start_time:.3f}s")
 
     start_time = time.perf_counter()
     with Pool(32) as pool:
-        max = max([r for r in pool.imap_unordered(forest.checkScene, forest.getInsideTrees(), chunksize=300)])
+        max = max([r for r in pool.imap_unordered(
+            forest.checkScene, forest.getInsideTrees(), chunksize=300)])
 
-    print(f"The highest scenic score is: {max} found in {time.perf_counter()-start_time:.3f}s")
+    print(
+        f"The highest scenic score is: {max} found in {time.perf_counter()-start_time:.3f}s")
