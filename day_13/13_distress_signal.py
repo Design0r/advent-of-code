@@ -37,7 +37,7 @@ def compare_list(l, r) -> int:
                 return 0
 
 
-def partOne():
+def part_one():
     result = 0
     for i, section in enumerate(signal_pairs, start=1):
         pair = convert_to_list(*section.split("\n"))
@@ -61,5 +61,5 @@ def part_two() -> int:
 if __name__ == '__main__':
     signal_pairs = open("input.txt").read().split("\n\n")
 
-    print(f"Part One: {partOne()}")
+    print(f"Part One: {part_one()}")
     print(f"Part Two: {part_two()}")
