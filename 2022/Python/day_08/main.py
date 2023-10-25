@@ -34,7 +34,12 @@ class Forest:
         return self._trees
 
     def getInsideTrees(self) -> List[Tree]:
-        return [x for x in self.getTrees() if 0 < x.getPosition()[0] < self.getHeight() and 0 < x.getPosition()[1] < self.getWidth()]
+        return [
+            x
+            for x in self.getTrees()
+            if 0 < x.getPosition()[0] < self.getHeight()
+            and 0 < x.getPosition()[1] < self.getWidth()
+        ]
 
     def getWidth(self) -> int:
         return self._width
@@ -69,12 +74,17 @@ class Forest:
             if x.getPosition()[1] == tree_pos[1]:
                 vertical_list.append(x)
 
-        horizontal_left = horizontal_list[:tree_pos[1]]
-        horizontal_right = horizontal_list[tree_pos[1] + 1:]
-        vertical_top = vertical_list[:tree_pos[0]]
-        vertical_bottom = vertical_list[tree_pos[0] + 1:]
+        horizontal_left = horizontal_list[: tree_pos[1]]
+        horizontal_right = horizontal_list[tree_pos[1] + 1 :]
+        vertical_top = vertical_list[: tree_pos[0]]
+        vertical_bottom = vertical_list[tree_pos[0] + 1 :]
 
-        if loop(horizontal_left) or loop(horizontal_right) or loop(vertical_top) or loop(vertical_bottom):
+        if (
+            loop(horizontal_left)
+            or loop(horizontal_right)
+            or loop(vertical_top)
+            or loop(vertical_bottom)
+        ):
             return True
         else:
             return False
@@ -100,22 +110,27 @@ class Forest:
             if x.getPosition()[1] == tree_pos[1]:
                 vertical_list.append(x)
 
-        horizontal_left = horizontal_list[:tree_pos[1]][::-1]
-        horizontal_right = horizontal_list[tree_pos[1] + 1:]
-        vertical_top = vertical_list[:tree_pos[0]][::-1]
-        vertical_bottom = vertical_list[tree_pos[0] + 1:]
+        horizontal_left = horizontal_list[: tree_pos[1]][::-1]
+        horizontal_right = horizontal_list[tree_pos[1] + 1 :]
+        vertical_top = vertical_list[: tree_pos[0]][::-1]
+        vertical_bottom = vertical_list[tree_pos[0] + 1 :]
 
-        return loop(horizontal_right) * loop(horizontal_left) * loop(vertical_top) * loop(vertical_bottom)
+        return (
+            loop(horizontal_right)
+            * loop(horizontal_left)
+            * loop(vertical_top)
+            * loop(vertical_bottom)
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     start_time = time.perf_counter()
 
     # create new forest
     forest = Forest()
 
     # add trees to forest
-    input = open("input.txt").read().split("\n")
+    input = open("day_08/input.txt").read().split("\n")
     forest.setDimensions(len(input) - 1, len(input[0]) - 1)
 
     for row_idx, line in enumerate(input):
@@ -123,16 +138,31 @@ if __name__ == '__main__':
             forest.addTree(Tree(int(height), (row_idx, column_idx)))
 
     with Pool(32) as pool:
-        count = sum([1 for i in pool.imap_unordered(
-            forest.checkVisibility, forest.getInsideTrees(), chunksize=300) if i])
+        count = sum(
+            [
+                1
+                for i in pool.imap_unordered(
+                    forest.checkVisibility, forest.getInsideTrees(), chunksize=300
+                )
+                if i
+            ]
+        )
 
     print(
-        f"Number of visible Trees: {count + (2 * forest.getWidth()) + (2 * forest.getHeight())} found in {time.perf_counter()-start_time:.3f}s")
+        f"Number of visible Trees: {count + (2 * forest.getWidth()) + (2 * forest.getHeight())} found in {time.perf_counter()-start_time:.3f}s"
+    )
 
     start_time = time.perf_counter()
     with Pool(32) as pool:
-        max = max([r for r in pool.imap_unordered(
-            forest.checkScene, forest.getInsideTrees(), chunksize=300)])
+        max = max(
+            [
+                r
+                for r in pool.imap_unordered(
+                    forest.checkScene, forest.getInsideTrees(), chunksize=300
+                )
+            ]
+        )
 
     print(
-        f"The highest scenic score is: {max} found in {time.perf_counter()-start_time:.3f}s")
+        f"The highest scenic score is: {max} found in {time.perf_counter()-start_time:.3f}s"
+    )

@@ -17,20 +17,23 @@ class Grid(object):
         for y, row in enumerate(s.splitlines()):
             for x, h in enumerate(row):
                 self.data[(x, y)] = self._parse_height(h)
-                if h == 'S':
+                if h == "S":
                     self.start = (x, y)
-                if h == 'E':
+                if h == "E":
                     self.end = (x, y)
 
         self.size = (x + 1, y + 1)
 
     @staticmethod
     def _parse_height(s: str) -> int:
-        zero = ord('a')
+        zero = ord("a")
         match s:
-            case 'S': return 0
-            case 'E': return ord('z') - zero
-            case other: return ord(other) - zero
+            case "S":
+                return 0
+            case "E":
+                return ord("z") - zero
+            case other:
+                return ord(other) - zero
 
     def get(self, value: Pt) -> int:
         return self.data[value]
@@ -93,7 +96,7 @@ def solve() -> tuple[int, int]:
     return len(next(i for i in paths if i[0] == grid.start)), min(len(i) for i in paths)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     part_one, part_two = solve()
     print(f"Part One: {part_one}")
     print(f"Part Two: {part_two}")

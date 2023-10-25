@@ -58,7 +58,7 @@ def part_two() -> int:
     return result
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     signal_pairs = open("input.txt").read().split("\n\n")
 
     print(f"Part One: {part_one()}")
