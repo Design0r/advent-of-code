@@ -2,12 +2,12 @@ import time
 from typing import List
 
 
-def importCalories(file: str) -> List[List[int]]:
+def importCalories(file_path: str) -> List[List[int]]:
     all_elf_calories = []
     elf_calories = []
 
-    with open(file) as file:
-        for line in file:
+    with open(file_path) as file:
+        for line in file: 
             line = line[:-1]
 
             if line != "":

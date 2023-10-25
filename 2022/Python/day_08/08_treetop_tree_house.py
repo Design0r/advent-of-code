@@ -1,12 +1,12 @@
-from typing import List
+from typing import List, Tuple
 import time
 from multiprocessing import Pool
 
 
 class Tree:
-    def __init__(self, height: int, position: (int, int)):
+    def __init__(self, height: int, position: Tuple[int, int]):
         self._height: int = height
-        self._position: (int, int) = position
+        self._position: Tuple[int, int] = position
 
     def setHeight(self, height: int):
         self._height = height
@@ -14,7 +14,7 @@ class Tree:
     def getHeight(self) -> int:
         return self._height
 
-    def getPosition(self) -> (int, int):
+    def getPosition(self) -> Tuple[int, int]:
         return self._position
 
     def setPosition(self, new_position):
@@ -115,12 +115,12 @@ if __name__ == '__main__':
     forest = Forest()
 
     # add trees to forest
-    input = open("day_08/input.txt").read().split("\n")
+    input = open("input.txt").read().split("\n")
     forest.setDimensions(len(input) - 1, len(input[0]) - 1)
 
     for row_idx, line in enumerate(input):
         for column_idx, height in enumerate(line):
-            forest.addTree(Tree(height, (row_idx, column_idx)))
+            forest.addTree(Tree(int(height), (row_idx, column_idx)))
 
     with Pool(32) as pool:
         count = sum([1 for i in pool.imap_unordered(
