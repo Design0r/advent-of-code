@@ -1,5 +1,5 @@
-from typing import List
 import time
+from typing import List
 
 
 def importCalories(file: str) -> List[List[int]]:
@@ -39,7 +39,9 @@ def getMostCalorieElf(elf_list: List[List[int]], elf_num: int) -> int:
     return calorie_sum
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     start = time.time()
-    print(getMostCalorieElf(importCalories("day_01/input.txt"), 3),
-          f"executed in {time.time() - start}s")
+    print(
+        getMostCalorieElf(importCalories("day_01/input.txt"), 3),
+        f"executed in {time.time() - start}s",
+    )

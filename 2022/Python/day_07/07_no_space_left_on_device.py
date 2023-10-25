@@ -18,7 +18,7 @@ class File:
 folders = []
 current_folder = None
 
-with open("input.txt") as file:
+with open("day_07/input.txt") as file:
     for cmd in file.readlines():
 
         if cmd.strip().startswith("$ cd"):
