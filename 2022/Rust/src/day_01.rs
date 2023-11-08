@@ -1,9 +1,14 @@
 use std::fs;
 
+#[cfg(windows)]
+const LINE_ENDING: &'static str = "\r\n\r\n";
+#[cfg(not(windows))]
+const LINE_ENDING: &'static str = "\n\n";
+
 fn main() {
     let mut backpack: Vec<u32> = fs::read_to_string("inputs/day_01.txt")
         .expect("error reading file")
-        .split("\n\n")
+        .split(LINE_ENDING)
         .map(|blocks| {
             blocks
                 .lines()
