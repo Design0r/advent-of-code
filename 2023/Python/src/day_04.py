@@ -7,7 +7,7 @@ def part_1():
         left, right = line.strip().split(": ")[1].split(" | ")
         won = {int(i) for i in left.split(" ") if i != ""}
         played = {int(i) for i in right.split(" ") if i != ""}
-        number_of_wins = len(list(filter(lambda x: x in won, played)))
+        number_of_wins = len(won.intersection(played))
         points = int(2 ** (number_of_wins - 1))
         result += points
 
@@ -22,14 +22,13 @@ def part_2():
         left, right = line.strip().split(": ")[1].split(" | ")
         won = {int(i) for i in left.split(" ") if i != ""}
         played = {int(i) for i in right.split(" ") if i != ""}
-        number_of_wins = len(list(filter(lambda x: x in won, played)))
+        number_of_wins = len(won.intersection(played))
 
         card_stack[card_num] = {"wins": number_of_wins, "count": 1}
 
     for card_id, card in card_stack.items():
-        wins = card_stack[card_id]["wins"]
         for _ in range(card["count"]):
-            for i in range(wins):
+            for i in range(card_stack[card_id]["wins"]):
                 card_stack[card_id + i + 1]["count"] += 1
 
     result = sum([v["count"] for v in card_stack.values()])
