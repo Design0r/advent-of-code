@@ -1,4 +1,6 @@
-file = open("inputs/day_04.txt").readlines()
+from pathlib import Path
+
+file = open(Path(__file__).parent.parent / "inputs/day_04.txt").readlines()
 
 
 def part_1():

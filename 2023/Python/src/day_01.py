@@ -1,6 +1,7 @@
+from pathlib import Path
 from typing import Optional
 
-file = open("inputs/day_01.txt").readlines()
+file = open(Path(__file__).parent.parent / "inputs/day_01.txt").readlines()
 
 alpha_num = {
     "one": 1,

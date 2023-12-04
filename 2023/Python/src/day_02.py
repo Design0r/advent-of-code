@@ -1,4 +1,6 @@
-file = open("inputs/day_02.txt").readlines()
+from pathlib import Path
+
+file = open(Path(__file__).parent.parent / "inputs/day_02.txt").readlines()
 
 RED = 12
 GREEN = 13

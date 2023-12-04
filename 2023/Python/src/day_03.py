@@ -1,6 +1,7 @@
 import functools
+from pathlib import Path
 
-file = open("inputs/day_03.txt").readlines()
+file = open(Path(__file__).parent.parent / "inputs/day_03.txt").readlines()
 
 
 def get_part_number_sum(line_idx: int) -> int:
