@@ -1,15 +1,6 @@
 file = open("inputs/day_04.txt").readlines()
 
 
-def calc_points(number_of_wins: int) -> int:
-    if number_of_wins == 0:
-        return 0
-    points = 1
-    for _ in range(number_of_wins - 1):
-        points = points * 2
-    return points
-
-
 def part_1():
     result = 0
     for line in file:
@@ -17,7 +8,7 @@ def part_1():
         won = {int(i) for i in left.split(" ") if i != ""}
         played = {int(i) for i in right.split(" ") if i != ""}
         number_of_wins = len(list(filter(lambda x: x in won, played)))
-        points = calc_points(number_of_wins)
+        points = int(2 ** (number_of_wins - 1))
         result += points
 
     print(f"Day 04, Part 1:", result)
