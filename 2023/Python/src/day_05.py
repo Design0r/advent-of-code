@@ -3,7 +3,7 @@ from multiprocessing import Pool
 from pathlib import Path
 from typing import Iterator
 
-file = open(Path(__file__).parent.parent / "samples/day_05.txt").read()
+file = open(Path(__file__).parent.parent / "inputs/day_05.txt").read()
 
 
 maps = file.split("\n\n")
