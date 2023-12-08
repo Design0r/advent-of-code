@@ -1,5 +1,5 @@
+from itertools import count, product
 from pathlib import Path
-from itertools import product
 
 file = open(Path(__file__).parent.parent / "inputs/day_07.txt").readlines()
 cards = {
@@ -19,70 +19,23 @@ cards = {
 }
 
 
-def if_five_of_a_kind(hand: str) -> int:
-    if len(set(hand)) == 1:
-        return 6000
-    return 0
-
-
-def is_four_of_a_kind(hand: str) -> int:
-    counts = {x: hand.count(x) for x in hand}
-    if 4 in counts.values():
-        return 5000
-
-    return 0
-
-
-def is_full_house(hand: str) -> int:
-    counts = {x: hand.count(x) for x in hand}
-    if 3 in counts.values() and 2 in counts.values():
-        return 4000
-
-    return 0
-
-
-def is_three_of_a_kind(hand: str) -> int:
-    counts = {x: hand.count(x) for x in hand}
-    if 3 in counts.values():
-        return 3000
-
-    return 0
-
-
-def is_two_pairs(hand: str) -> int:
-    counts = {x: hand.count(x) for x in hand}
-    if list(counts.values()).count(2) == 2:
-        return 2000
-
-    return 0
-
-
-def is_one_pair(hand: str) -> int:
-    counts = {x: hand.count(x) for x in hand}
-    if 2 in counts.values():
-        return 1000
-
-    return 0
-
-
-def is_high_card(hand: str) -> int:
-    return sum(map(lambda x: cards[x], hand))
-
-
 def get_hand_power(hand: str) -> int:
-    checks = (
-        if_five_of_a_kind,
-        is_four_of_a_kind,
-        is_full_house,
-        is_three_of_a_kind,
-        is_two_pairs,
-        is_one_pair,
-    )
+    counts = {x: hand.count(x) for x in hand}
+    vals = counts.values()
 
-    for check in checks:
-        power = check(hand)
-        if power > 0:
-            return power
+    if len(set(hand)) == 1:
+        return 6
+    elif 4 in vals:
+        return 5
+    elif 3 in vals and 2 in vals:
+        return 4
+    elif 3 in vals:
+        return 3
+    elif list(vals).count(2) == 2:
+        return 2
+    elif 2 in vals:
+        return 1
+
     return 0
 
 
@@ -110,7 +63,7 @@ def part_1():
     ):
         result += (idx + 1) * bid
 
-    print("Day 07, Part 1", result)
+    print("Day 07, Part 1:", result)
 
 
 def part_2():
@@ -166,7 +119,7 @@ def part_2():
     ):
         result += (idx + 1) * bid
 
-    print("Day 07, Part 2", result)
+    print("Day 07, Part 2:", result)
 
 
 if __name__ == "__main__":
