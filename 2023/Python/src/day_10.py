@@ -1,6 +1,5 @@
 from pathlib import Path
 
-
 class Grid:
     def __init__(self, input: list[str]):
         self.directions = {
@@ -9,46 +8,84 @@ class Grid:
             "LEFT": (0, -1),
             "RIGHT": (0, 1),
         }
+        self.possible_symbols = {"UP": ("|",  "7", "F", "S"), "DOWN": ("|", "L", "J", "S"), "LEFT": ("-", "L", "F", "S"), "RIGHT": ("-", "7", "J", "S")}
+        self.possible_dirs = {"|":("UP", "DOWN"),"-": ("LEFT", "RIGHT"), "L": ("UP", "RIGHT"), "J": ("UP", "LEFT"), "F": ("DOWN", "RIGHT"), "7": ("DOWN", "LEFT")}
+        #self.possible_dirs = {"|":("UP", "DOWN"),"-": ("LEFT", "RIGHT"), "L": ("DOWN", "LEFT"), "J": ("DOWN", "RIGHT"), "F": ("UP", "LEFT"), "7": ("UP", "RIGHT")}
         self.grid = self._parse_input(input)
         self.loop = []
         self.start = self._find_start()
         self.current_pos = self.start
-        self.move_history = [self.current_pos]
+        self.move_history = {0: self.start}
 
     def _parse_input(self, input: list[str]) -> list[list[str]]:
-        return [list(line) for line in input]
+        return [list(line.strip()) for line in input]
 
     def _find_start(self) -> tuple[int, int]:
         for y, line in enumerate(self.grid):
             for x, char in enumerate(line):
                 if char == "S":
-                    return (x, y)
+                    return (y, x)
         return (0, 0)
 
     def find_loop(self) -> None:
         pass
-
-    def move(self, direction: str) -> None:
+    
+    def is_possible_move(self, direction: str, current: tuple[int, int], next: tuple[int, int]) -> bool:
+        n_y,n_x = next
+        c_y,c_x = current
+        if 0 <= n_y < len(self.grid) and 0 < n_x < len(self.grid[0]):
+            possible_symbols = self.possible_symbols[direction]
+            next_symbol = self.grid[n_y][n_x]
+            curr_symbol = self.grid[c_y][c_x]
+            if next_symbol in possible_symbols and direction in self.possible_dirs.get(curr_symbol, ("UP", "DOWN", "LEFT", "RIGHT")):
+                return True
+            return False
+        
+        return False
+        
+    def move(self, direction: str, current_pos: tuple[int, int]) -> tuple[int, int]:
         y, x = self.directions[direction]
-        self.current_pos = (self.current_pos[0] + y, self.current_pos[1] + x)
-        self.move_history.append(self.current_pos)
+        current_pos = (current_pos[0] + y, current_pos[1] + x)
+        return current_pos
 
     def print_move_history(self) -> None:
         grid = [["." for _ in range(len(self.grid[0]))] for _ in self.grid]
-        for idx, move in enumerate(self.move_history):
+        for idx, (i, move) in enumerate(self.move_history.items()):
             grid[move[0]][move[1]] = str(idx)
         
-        print(f"{"="*80}\n\n{"\n".join(["".join(line) for line in grid])}\n")
+        print(f"{"="*80}\n\n{"\n".join(["  ".join(line) for line in grid])}\n")
 
+    def get_next_move(self, current_pos, visited=None):
+        if visited is None:
+            visited = set()
+        visited.add(current_pos)
+        grid.print_move_history()
 
+        # If the current position is the goal, stop the search
+        if current_pos == self.start and len(visited) > 1:
+            return
+
+        # Try moving in all directions
+        for direction in ["UP", "DOWN", "LEFT", "RIGHT"]:
+            new_pos = self.move(direction, current_pos)
+
+            # If the move is possible and the new position has not been visited yet
+            if new_pos not in visited and self.is_possible_move(direction, current_pos, new_pos):
+                self.move_history[len(visited )] = new_pos
+                self.get_next_move(new_pos, visited)
+
+        # If no moves are possible, backtrack by returning
+        return
+
+        
     def __str__(self) -> str:
         return f"{"="*80}\n\n{"".join(["".join(line) for line in self.grid])}\n"
 
 
 file = open(Path(__file__).parent.parent / "samples/day_10.txt").readlines()
 grid = Grid(file)
-grid.move("DOWN")
-grid.move("RIGHT")
-grid.move("RIGHT")
-grid.move("RIGHT")
-grid.print_move_history()
+grid.get_next_move(grid.start)
+for i in grid.grid:
+    print(i)
+
+print(grid.move_history)
