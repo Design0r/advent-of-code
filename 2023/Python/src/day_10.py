@@ -1,4 +1,6 @@
 from pathlib import Path
+import sys
+sys.setrecursionlimit(1000000000)
 
 class Grid:
     def __init__(self, input: list[str]):
@@ -10,7 +12,6 @@ class Grid:
         }
         self.possible_symbols = {"UP": ("|",  "7", "F", "S"), "DOWN": ("|", "L", "J", "S"), "LEFT": ("-", "L", "F", "S"), "RIGHT": ("-", "7", "J", "S")}
         self.possible_dirs = {"|":("UP", "DOWN"),"-": ("LEFT", "RIGHT"), "L": ("UP", "RIGHT"), "J": ("UP", "LEFT"), "F": ("DOWN", "RIGHT"), "7": ("DOWN", "LEFT")}
-        #self.possible_dirs = {"|":("UP", "DOWN"),"-": ("LEFT", "RIGHT"), "L": ("DOWN", "LEFT"), "J": ("DOWN", "RIGHT"), "F": ("UP", "LEFT"), "7": ("UP", "RIGHT")}
         self.grid = self._parse_input(input)
         self.loop = []
         self.start = self._find_start()
@@ -33,7 +34,7 @@ class Grid:
     def is_possible_move(self, direction: str, current: tuple[int, int], next: tuple[int, int]) -> bool:
         n_y,n_x = next
         c_y,c_x = current
-        if 0 <= n_y < len(self.grid) and 0 < n_x < len(self.grid[0]):
+        if 0 <= n_y < len(self.grid) and 0 <= n_x < len(self.grid[0]):
             possible_symbols = self.possible_symbols[direction]
             next_symbol = self.grid[n_y][n_x]
             curr_symbol = self.grid[c_y][c_x]
@@ -59,22 +60,18 @@ class Grid:
         if visited is None:
             visited = set()
         visited.add(current_pos)
-        grid.print_move_history()
+        #grid.print_move_history()
 
-        # If the current position is the goal, stop the search
         if current_pos == self.start and len(visited) > 1:
             return
 
-        # Try moving in all directions
         for direction in ["UP", "DOWN", "LEFT", "RIGHT"]:
             new_pos = self.move(direction, current_pos)
 
-            # If the move is possible and the new position has not been visited yet
             if new_pos not in visited and self.is_possible_move(direction, current_pos, new_pos):
                 self.move_history[len(visited )] = new_pos
                 self.get_next_move(new_pos, visited)
 
-        # If no moves are possible, backtrack by returning
         return
 
         
@@ -82,10 +79,12 @@ class Grid:
         return f"{"="*80}\n\n{"".join(["".join(line) for line in self.grid])}\n"
 
 
-file = open(Path(__file__).parent.parent / "samples/day_10.txt").readlines()
-grid = Grid(file)
-grid.get_next_move(grid.start)
-for i in grid.grid:
-    print(i)
 
-print(grid.move_history)
+def part_1():
+    file = open(Path(__file__).parent.parent / "inputs/day_10.txt").readlines()
+    grid = Grid(file)
+    grid.get_next_move(grid.start)
+    print("Day 10, Part 1:", len(grid.move_history)//2)
+
+if __name__ == "__main__":
+    part_1()
