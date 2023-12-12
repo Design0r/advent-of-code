@@ -2,6 +2,8 @@ from pathlib import Path
 import sys
 sys.setrecursionlimit(1000000000)
 
+file = open(Path(__file__).parent.parent / "inputs/day_10.txt").readlines()
+
 class Grid:
     def __init__(self, input: list[str]):
         self.directions = {
@@ -13,9 +15,7 @@ class Grid:
         self.possible_symbols = {"UP": ("|",  "7", "F", "S"), "DOWN": ("|", "L", "J", "S"), "LEFT": ("-", "L", "F", "S"), "RIGHT": ("-", "7", "J", "S")}
         self.possible_dirs = {"|":("UP", "DOWN"),"-": ("LEFT", "RIGHT"), "L": ("UP", "RIGHT"), "J": ("UP", "LEFT"), "F": ("DOWN", "RIGHT"), "7": ("DOWN", "LEFT")}
         self.grid = self._parse_input(input)
-        self.loop = []
         self.start = self._find_start()
-        self.current_pos = self.start
         self.move_history = {0: self.start}
 
     def _parse_input(self, input: list[str]) -> list[list[str]]:
@@ -74,17 +74,32 @@ class Grid:
 
         return
 
-        
+    def is_enclosed(self, current_pos: tuple[int, int]) -> bool:
+        y, x = current_pos
+        if self.grid[y][x] == "S":
+            return True
+        return False
+      
     def __str__(self) -> str:
         return f"{"="*80}\n\n{"".join(["".join(line) for line in self.grid])}\n"
 
 
 
 def part_1():
-    file = open(Path(__file__).parent.parent / "inputs/day_10.txt").readlines()
     grid = Grid(file)
     grid.get_next_move(grid.start)
     print("Day 10, Part 1:", len(grid.move_history)//2)
+
+def part_2():
+    grid = Grid(file)
+    grid.get_next_move(grid.start)
+
+    for y_idx, line in enumerate(grid.grid):
+        for x_idx, char in enumerate(line):
+            if (y_idx, x_idx) not in grid.move_history.values():
+                
+
+    print("Day 10, Part 2:", len(grid.move_history)//2)
 
 if __name__ == "__main__":
     part_1()
