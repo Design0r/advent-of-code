@@ -2,7 +2,7 @@ from pathlib import Path
 import sys
 sys.setrecursionlimit(1000000000)
 
-file = open(Path(__file__).parent.parent / "inputs/day_10.txt").readlines()
+file = open(Path(__file__).parent.parent / "samples/day_10.txt").readlines()
 
 class Grid:
     def __init__(self, input: list[str]):
@@ -74,32 +74,36 @@ class Grid:
 
         return
 
-    def is_enclosed(self, current_pos: tuple[int, int]) -> bool:
-        y, x = current_pos
-        if self.grid[y][x] == "S":
-            return True
-        return False
+    def get_enclosed(self) -> int:
+        counter = 0
+        num_of_collisios = 0
+        grid = [["." for _ in range(len(self.grid[0]))] for _ in self.grid]
+        for idx, (i, move) in enumerate(self.move_history.items()):
+            grid[move[0]][move[1]] = str(idx)
+
+        for y_idx, line in enumerate(grid):
+            for x_idx, char in enumerate(line):
+                if char.isdigit():
+                    num_of_collisios += 1
+                else:
+                    if num_of_collisios % 2 != 0:
+                        counter += 1
+        return counter
+                    
       
     def __str__(self) -> str:
         return f"{"="*80}\n\n{"".join(["".join(line) for line in self.grid])}\n"
 
 
 
-def part_1():
+def main():
     grid = Grid(file)
     grid.get_next_move(grid.start)
     print("Day 10, Part 1:", len(grid.move_history)//2)
-
-def part_2():
-    grid = Grid(file)
     grid.get_next_move(grid.start)
+    grid.print_move_history()
+    print("Day 10, Part 2:", grid.get_enclosed())
 
-    for y_idx, line in enumerate(grid.grid):
-        for x_idx, char in enumerate(line):
-            if (y_idx, x_idx) not in grid.move_history.values():
-                
-
-    print("Day 10, Part 2:", len(grid.move_history)//2)
 
 if __name__ == "__main__":
-    part_1()
+    main()
