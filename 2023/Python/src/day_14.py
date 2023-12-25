@@ -1,4 +1,5 @@
 from pathlib import Path
+from time import perf_counter
 
 file = open(Path(__file__).parent.parent / "inputs/day_14.txt").read().splitlines()
 
@@ -7,15 +8,25 @@ empty = "."
 collison = {"#", rock}
 
 
+def timeit(func):
+    def wrapper(*args, **kwargs):
+        start = perf_counter()
+        func(*args, **kwargs)
+        stop = perf_counter()
+        print(f"finished {func.__qualname__} in {stop-start:.3f}s")
+
+    return wrapper
+
+
 def move(grid, y, x):
     next_y = y - 1
     if 0 <= next_y and grid[next_y][x] not in collison:
-        grid[next_y][x] = rock
-        grid[y][x] = empty
+        grid[next_y][x], grid[y][x] = rock, empty
         move(grid, next_y, x)
     return grid
 
 
+@timeit
 def part_1():
     grid = [list(line) for line in file]
 
@@ -52,6 +63,7 @@ def to_hashable(grid: list[list[str]]) -> tuple[str]:
     return tuple("".join(line) for line in grid)
 
 
+@timeit
 def part_2():
     grid = [list(line) for line in file]
     temp_grid = to_hashable(grid)
