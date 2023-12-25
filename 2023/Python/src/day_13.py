@@ -22,12 +22,13 @@ def is_reflection(grid, low_bound, upper_bound, smudges=0) -> bool:
 
 
 def check_grid(grid, smudges=0) -> int:
-    for idx, line in enumerate(grid):
+    for idx, _ in enumerate(grid):
         if idx == 0:
             continue
 
         if is_reflection(grid, idx - 1, idx, smudges=smudges):
             return idx
+
     return 0
 
 
@@ -36,9 +37,9 @@ def part_1():
     for grid in grids:
         grid_split = grid.splitlines()
         result += check_grid(grid_split) * 100
-
         grid_split = tuple(zip(*grid_split))
         result += check_grid(grid_split)
+
     print("Day 13, Part 1:", result)
 
 
@@ -47,9 +48,9 @@ def part_2():
     for grid in grids:
         grid_split = grid.splitlines()
         result += check_grid(grid_split, smudges=1) * 100
-
         grid_split = tuple(zip(*grid_split))
         result += check_grid(grid_split, smudges=1)
+
     print("Day 13, Part 2:", result)
 
 
