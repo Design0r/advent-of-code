@@ -1,21 +1,11 @@
 from pathlib import Path
-from time import perf_counter
+from utils import timeit
 
 file = open(Path(__file__).parent.parent / "inputs/day_14.txt").read().splitlines()
 
 rock = "O"
 empty = "."
 collison = {"#", rock}
-
-
-def timeit(func):
-    def wrapper(*args, **kwargs):
-        start = perf_counter()
-        func(*args, **kwargs)
-        stop = perf_counter()
-        print(f"finished {func.__qualname__} in {stop-start:.3f}s")
-
-    return wrapper
 
 
 def move(grid, y, x):

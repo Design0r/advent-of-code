@@ -1,4 +1,5 @@
 from pathlib import Path
+from utils import timeit
 
 file = open(Path(__file__).parent.parent / "inputs/day_13.txt").read()
 grids = file.split("\n\n")
@@ -32,6 +33,7 @@ def check_grid(grid, smudges=0) -> int:
     return 0
 
 
+@timeit
 def part_1():
     result = 0
     for grid in grids:
@@ -43,6 +45,7 @@ def part_1():
     print("Day 13, Part 1:", result)
 
 
+@timeit
 def part_2():
     result = 0
     for grid in grids:

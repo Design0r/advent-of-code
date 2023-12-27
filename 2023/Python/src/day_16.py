@@ -1,47 +1,24 @@
-from __future__ import annotations
 from pathlib import Path
-from dataclasses import dataclass
 from typing import Generator
 import sys
-from time import perf_counter
+from utils import timeit, Vec2, StrGrid2D
 
-sys.setrecursionlimit(1_000_000_000)
+sys.setrecursionlimit(1_000_000)
 
 file = open(Path(__file__).parent.parent / "inputs/day_16.txt").read().splitlines()
 grid = [list(line) for line in file]
-
-
-def timeit(func):
-    def wrapper(*args, **kwargs):
-        start = perf_counter()
-        func(*args, **kwargs)
-        stop = perf_counter()
-        print(f"finished {func.__qualname__} in {stop-start:.3f}s")
-
-    return wrapper
-
-
-@dataclass(frozen=True, slots=True)
-class Vec2:
-    y: int
-    x: int
-
-    def __add__(self, __obj: Vec2):
-        return Vec2(self.y + __obj.y, self.x + __obj.x)
-
-    def __eq__(self, __obj: Vec2):
-        return self.y == __obj.y and self.x == __obj.x
+DirPos = set[tuple[Vec2, Vec2]]
 
 
 directions = {
-    "up": Vec2(-1, 0),
-    "down": Vec2(1, 0),
-    "left": Vec2(0, -1),
-    "right": Vec2(0, 1),
+    "up": (-1, 0),
+    "down": (1, 0),
+    "left": (0, -1),
+    "right": (0, 1),
 }
 
 
-def print_grid(grid: list[list[str]]):
+def print_grid(grid: StrGrid2D):
     print("=" * 20)
     for line in grid:
         print(" ".join((str(i) for i in line)))
@@ -85,20 +62,23 @@ def get_new_dirs(symbol: str, curr_dir: Vec2) -> Generator[Vec2, None, None]:
             yield directions["right"]
 
 
-def move(grid: list[list[str]], pos: Vec2, dir: Vec2, seen=None):
+def move(grid: StrGrid2D, pos: Vec2, dir: Vec2, seen: DirPos | None = None):
+    py, px = pos
+    dy, dx = dir
     if not seen:
         seen = set()
         seen.add((dir, pos))
-        for new_dir in get_new_dirs(grid[pos.y][pos.x], dir):
+        for new_dir in get_new_dirs(grid[py][px], dir):
             move(grid, pos, new_dir, seen=seen)
         return seen
 
-    new_pos = pos + dir
-    if new_pos.y < 0 or new_pos.y > len(grid) - 1:
+    new_pos = (py + dy, px + dx)
+    ny, nx = new_pos
+    if ny < 0 or ny > len(grid) - 1:
         return seen
-    elif new_pos.x < 0 or new_pos.x > len(grid[0]) - 1:
+    elif nx < 0 or nx > len(grid[0]) - 1:
         return seen
-    new_symbol = grid[new_pos.y][new_pos.x]
+    new_symbol = grid[ny][nx]
 
     for new_dir in get_new_dirs(new_symbol, dir):
         t = (new_dir, new_pos)
@@ -116,7 +96,7 @@ def count_seen(seen: set[tuple[Vec2, Vec2]]):
 
 @timeit
 def part_1():
-    seen = move(grid, Vec2(0, 0), directions["right"])
+    seen = move(grid, (0, 0), directions["right"])
     print("Day 16, Part 1:", count_seen(seen))
 
 
@@ -125,25 +105,23 @@ def part_2():
     result = 0
     # top->down
     for i, _ in enumerate(grid[0]):
-        seen = move(grid, Vec2(0, i), directions["down"])
+        seen = move(grid, (0, i), directions["down"])
         result = max(result, count_seen(seen))
     # down->top
     for i, _ in enumerate(grid[-1]):
-        seen = move(grid, Vec2(0, i), directions["up"])
+        seen = move(grid, (0, i), directions["up"])
         result = max(result, count_seen(seen))
 
-    left = (x for _, y in enumerate(grid) for ix, x in enumerate(y) if ix == 0)
-    right = (
-        x for _, y in enumerate(grid) for ix, x in enumerate(y) if ix == len(grid) - 1
-    )
+    rotate = tuple(zip(*grid))
+
     # left->right
-    for i, _ in enumerate(left):
-        seen = move(grid, Vec2(i, 0), directions["right"])
+    for i, _ in enumerate(rotate[0]):
+        seen = move(grid, (i, 0), directions["right"])
         result = max(result, count_seen(seen))
 
     # right->left
-    for i, _ in enumerate(right):
-        seen = move(grid, Vec2(i, len(grid[0]) - 1), directions["left"])
+    for i, _ in enumerate(rotate[1]):
+        seen = move(grid, (i, len(grid[0]) - 1), directions["left"])
         result = max(result, count_seen(seen))
 
     print("Day 16, Part 2:", result)

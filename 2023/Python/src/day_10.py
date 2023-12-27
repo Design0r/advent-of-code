@@ -1,5 +1,6 @@
 from pathlib import Path
 import sys
+from utils import timeit
 sys.setrecursionlimit(1000000000)
 
 file = open(Path(__file__).parent.parent / "samples/day_10.txt").readlines()

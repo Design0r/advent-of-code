@@ -1,4 +1,5 @@
 from pathlib import Path
+from utils import timeit
 
 file = open(Path(__file__).parent.parent / "inputs/day_15.txt").read().strip()
 
@@ -41,6 +42,7 @@ def to_hash(input: str) -> int:
     return value
 
 
+@timeit
 def part_1():
     result = sum(map(to_hash, file.split(",")))
     print("Day 15, Part 1:", result)
@@ -55,6 +57,7 @@ def parse_cmd(input: str) -> dict[str, int]:
     return {label: int(num)}
 
 
+@timeit
 def part_2():
     boxes: dict[int, list[Lens]] = {}
     for cmd in file.split(","):
