@@ -3,6 +3,7 @@ from typing import Callable, Any
 
 Vec2 = tuple[int, int]
 StrGrid2D = list[list[str]]
+IntGrid2D = list[list[int]]
 
 
 def timeit(func: Callable[..., Any]) -> Callable[..., Any]:
