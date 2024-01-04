@@ -30,11 +30,11 @@ def get_part_number_sum(line_idx: int) -> int:
         bounds_t = line_idx - 1 if line_idx > 0 else line_idx
         bounds_b = line_idx + 1 if line_idx < len(file) - 1 else line_idx
 
-        bounds: list[str] = (
-            file[bounds_t][bounds_l : bounds_r + 1]
-            + file[bounds_b][bounds_l : bounds_r + 1]
-            + curr_line[bounds_l]
-            + curr_line[bounds_r]
+        bounds: str = (
+                file[bounds_t][bounds_l: bounds_r + 1]
+                + file[bounds_b][bounds_l: bounds_r + 1]
+                + curr_line[bounds_l]
+                + curr_line[bounds_r]
         )
 
         filtered = list(filter(lambda x: not x.isdigit() and x != ".", bounds))
@@ -70,10 +70,10 @@ def get_gear_positions(line_idx: int) -> list[tuple[int, tuple[int, int]]]:
         bounds_t = line_idx - 1 if line_idx > 0 else line_idx
         bounds_b = line_idx + 1 if line_idx < len(file) - 1 else line_idx
 
-        for pos, i in enumerate(file[bounds_t][bounds_l : bounds_r + 1]):
+        for pos, i in enumerate(file[bounds_t][bounds_l: bounds_r + 1]):
             if i == "*":
                 gears.append(((line_idx - 1, pos + bounds_l), num))
-        for pos, i in enumerate(file[bounds_b][bounds_l : bounds_r + 1]):
+        for pos, i in enumerate(file[bounds_b][bounds_l: bounds_r + 1]):
             if i == "*":
                 gears.append(((line_idx + 1, pos + bounds_l), num))
         if curr_line[bounds_l] == "*":

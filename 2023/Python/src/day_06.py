@@ -1,10 +1,10 @@
 from functools import reduce
 from pathlib import Path
 
-file = open(Path(__file__).parent.parent / "inputs/day_06.txt").readlines()
-time = [int(i) for i in file[0].strip().split(":")[1].strip().split(" ") if i.isdigit()]
+t, d = open(Path(__file__).parent.parent / "inputs/day_06.txt").read().splitlines()
+time = [int(i) for i in t.split(":")[1].strip().split(" ") if i.isdigit()]
 distance = [
-    int(i) for i in file[1].strip().split(":")[1].strip().split(" ") if i.isdigit()
+    int(i) for i in d.split(":")[1].strip().split(" ") if i.isdigit()
 ]
 
 

@@ -33,9 +33,7 @@ def part_1() -> None:
 def check_for_word_num(line: str, index: int) -> Optional[int]:
     for k, _ in alpha_num.items():
         num_len = len(k)
-        input_chars = "".join(
-            [i for idx, i in enumerate(line) if index <= idx <= index + num_len - 1]
-        )
+        input_chars = "".join(line[index : index + num_len])
 
         if input_chars in alpha_num:
             return alpha_num[input_chars]

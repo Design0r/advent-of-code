@@ -30,10 +30,10 @@ def part_2():
 
     for card_id, card in card_stack.items():
         for _ in range(card["count"]):
-            for i in range(card_stack[card_id]["wins"]):
+            for i in range(card["wins"]):
                 card_stack[card_id + i + 1]["count"] += 1
 
-    result = sum([v["count"] for v in card_stack.values()])
+    result = sum(v["count"] for v in card_stack.values())
     print(f"Day 04, Part 2:", result)
 
 
