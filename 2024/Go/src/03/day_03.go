@@ -23,7 +23,7 @@ func parse(path string) *Data {
 	return &Data{Input: stripped}
 }
 
-func peak(start int, length int, input *string) string {
+func peek(start int, length int, input *string) string {
 	if start+length > len(*input) {
 		return ""
 	}
@@ -67,7 +67,7 @@ func part1(data *Data) {
 	mul := "mul("
 	result, cursor := 0, 0
 	for cursor <= len(data.Input) {
-		if window := peak(cursor, len(mul), &data.Input); window == mul {
+		if window := peek(cursor, len(mul), &data.Input); window == mul {
 			num1, num2 := parseNums(cursor+len(mul), &data.Input)
 			result += num1 * num2
 		}
@@ -81,7 +81,7 @@ func part2(data *Data) {
 	result, cursor := 0, 0
 	enabled := true
 	for cursor <= len(data.Input) {
-		window := peak(cursor, len(dont), &data.Input)
+		window := peek(cursor, len(dont), &data.Input)
 		if len(window) < len(mul) {
 			break
 		}
