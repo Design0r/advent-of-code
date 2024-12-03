@@ -65,8 +65,7 @@ func parseNums(start int, input *string) (int, int) {
 
 func part1(data *Data) {
 	mul := "mul("
-	result := 0
-	cursor := 0
+	result, cursor := 0, 0
 	for cursor <= len(data.Input) {
 		if window := peak(cursor, len(mul), &data.Input); window == mul {
 			num1, num2 := parseNums(cursor+len(mul), &data.Input)
@@ -78,11 +77,8 @@ func part1(data *Data) {
 }
 
 func part2(data *Data) {
-	mul := "mul("
-	do := "do()"
-	dont := "don't()"
-	result := 0
-	cursor := 0
+	mul, do, dont := "mul(", "do()", "don't()"
+	result, cursor := 0, 0
 	enabled := true
 	for cursor <= len(data.Input) {
 		window := peak(cursor, len(dont), &data.Input)
@@ -95,9 +91,9 @@ func part2(data *Data) {
 			if enabled {
 				result += num1 * num2
 			}
-		} else if window[:len(do)] == "do()" {
+		} else if window[:len(do)] == do {
 			enabled = true
-		} else if window == "don't()" {
+		} else if window == dont {
 			enabled = false
 		}
 		cursor++
