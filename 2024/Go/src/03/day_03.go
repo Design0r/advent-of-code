@@ -78,7 +78,30 @@ func part1(data *Data) {
 }
 
 func part2(data *Data) {
+	mul := "mul("
+	do := "do()"
+	dont := "don't()"
 	result := 0
+	cursor := 0
+	enabled := true
+	for cursor <= len(data.Input) {
+		window := peak(cursor, len(dont), &data.Input)
+		if len(window) < len(mul) {
+			break
+		}
+
+		if window[:len(mul)] == mul {
+			num1, num2 := parseNums(cursor+len(mul), &data.Input)
+			if enabled {
+				result += num1 * num2
+			}
+		} else if window[:len(do)] == "do()" {
+			enabled = true
+		} else if window == "don't()" {
+			enabled = false
+		}
+		cursor++
+	}
 	fmt.Printf("Day 0: Part 2: %v\n", result)
 }
 
