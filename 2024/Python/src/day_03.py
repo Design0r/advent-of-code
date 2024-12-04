@@ -3,7 +3,7 @@ from enum import StrEnum, auto
 from pathlib import Path
 from typing import Any, Optional
 
-with open(Path(__file__).parent.parent / "samples/day_03.txt") as f:
+with open(Path(__file__).parent.parent / "inputs/day_03.txt") as f:
     file = f.read().strip()
 
 
