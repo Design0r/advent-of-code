@@ -8,30 +8,28 @@ import (
 	"time"
 )
 
-var DIRECTIONS []Point = []Point{
-	NewPoint(1, 0),
-	NewPoint(-1, 0),
-	NewPoint(0, 1),
-	NewPoint(0, -1),
-	NewPoint(1, 1),
-	NewPoint(-1, -1),
-	NewPoint(-1, 1),
-	NewPoint(1, -1),
+var DIRECTIONS [9]Point = [9]Point{
+	{1, 0},
+	{-1, 0},
+	{0, 1},
+	{0, -1},
+	{1, 1},
+	{-1, -1},
+	{-1, 1},
+	{1, -1},
 }
 
 type Point struct {
 	X, Y int
 }
 
-func NewPoint(x int, y int) Point {
-	return Point{X: x, Y: y}
-}
+type Grid = map[Point]rune
 
 type Data struct {
 	Lines []string
 	XPos  []Point
 	APos  []Point
-	Grid  map[Point]rune
+	Grid  Grid
 }
 
 func parse(path string) *Data {
@@ -44,11 +42,11 @@ func parse(path string) *Data {
 
 	xPos := []Point{}
 	aPos := []Point{}
-	grid := map[Point]rune{}
+	grid := Grid{}
 
 	for row, line := range lines {
 		for col, char := range line {
-			pos := NewPoint(col, row)
+			pos := Point{col, row}
 			grid[pos] = char
 			if char == 'X' {
 				xPos = append(xPos, pos)
@@ -61,10 +59,10 @@ func parse(path string) *Data {
 	return &Data{Lines: lines, XPos: xPos, APos: aPos, Grid: grid}
 }
 
-func getWord(grid map[Point]rune, start Point, dir Point, count int) string {
+func getWord(grid Grid, start Point, dir Point, count int) string {
 	word := []rune{}
 	for i := range count {
-		pos := NewPoint(start.X+(dir.X*i), start.Y+(dir.Y*i))
+		pos := Point{start.X + (dir.X * i), start.Y + (dir.Y * i)}
 		if char, exists := grid[pos]; exists {
 			word = append(word, char)
 		}
@@ -73,16 +71,16 @@ func getWord(grid map[Point]rune, start Point, dir Point, count int) string {
 	return string(word)
 }
 
-func checkMasX(grid map[Point]rune, start Point) bool {
-	topLeft := NewPoint(start.X-1, start.Y-1)
-	dir := NewPoint(1, 1)
+func checkMasX(grid Grid, start Point) bool {
+	topLeft := Point{start.X - 1, start.Y - 1}
+	dir := Point{1, 1}
 	word := getWord(grid, topLeft, dir, 3)
 	if word != "MAS" && word != "SAM" {
 		return false
 	}
 
-	bottomLeft := NewPoint(start.X-1, start.Y+1)
-	dir = NewPoint(1, -1)
+	bottomLeft := Point{start.X - 1, start.Y + 1}
+	dir = Point{1, -1}
 	word = getWord(grid, bottomLeft, dir, 3)
 	if word != "MAS" && word != "SAM" {
 		return false
