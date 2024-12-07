@@ -17,9 +17,10 @@ type Point struct {
 }
 
 type Data struct {
-	Grid  Grid
-	Start Point
-	Dir   Point
+	Grid    Grid
+	Start   Point
+	Dir     Point
+	visited *map[Point]Point
 }
 
 var rotate map[Point]Point = map[Point]Point{
@@ -28,7 +29,8 @@ var rotate map[Point]Point = map[Point]Point{
 	{0, 1}:  {-1, 0},
 	{-1, 0}: {0, -1},
 }
-var	dirMap map[string]Point = map[string]Point{"^": {0, -1}, ">": {1, 0}, "v": {0, 1}, "<": {-1, 0}}
+
+var dirMap map[string]Point = map[string]Point{"^": {0, -1}, ">": {1, 0}, "v": {0, 1}, "<": {-1, 0}}
 
 func parse(path string) *Data {
 	file, err := os.ReadFile(path)
@@ -51,7 +53,7 @@ func parse(path string) *Data {
 		}
 	}
 
-	return &Data{grid, startPoint, startDir}
+	return &Data{grid, startPoint, startDir, nil}
 }
 
 func printGrid(grid Grid, visited map[Point]Point) {
@@ -67,70 +69,60 @@ func printGrid(grid Grid, visited map[Point]Point) {
 	fmt.Println("====================================================")
 }
 
-func walk(pos Point, dir Point, grid Grid, visited map[Point]Point) int {
+func walk(pos Point, dir Point, grid Grid, visited map[Point]Point, part2 bool) bool {
+	if part2 {
+		if visited[pos] == dir {
+			return true
+		}
+	}
 	visited[pos] = dir
 	// printGrid(grid, visited)
-
-	nextPos := Point{pos.X + dir.X, pos.Y + dir.Y}
-	if nextPos.X < 0 || nextPos.X >= len(grid[0]) || nextPos.Y < 0 || nextPos.Y >= len(grid) {
-		return len(visited)
-	}
-
-	if grid[nextPos.Y][nextPos.X] == "#" {
-		nextDir := rotate[dir]
-		nextPos = Point{pos.X + nextDir.X, pos.Y + nextDir.Y}
-		return walk(nextPos, nextDir, grid, visited)
-	}
-
-	return walk(nextPos, dir, grid, visited)
-}
-
-func isLooping(pos Point, dir Point, grid Grid, visited map[Point]Point, newObstacle Point) bool {
-	visited[pos] = dir
-	// printGrid(grid, visited)
-
-	if _, exists := visited[pos]; exists {
-		return true
-	}
 
 	nextPos := Point{pos.X + dir.X, pos.Y + dir.Y}
 	if nextPos.X < 0 || nextPos.X >= len(grid[0]) || nextPos.Y < 0 || nextPos.Y >= len(grid) {
 		return false
 	}
 
-	if grid[nextPos.Y][nextPos.X] == "#" ||
-		(nextPos.X == newObstacle.X) && (nextPos.Y == newObstacle.Y) {
-		nextDir := rotate[dir]
-		nextPos = Point{pos.X + nextDir.X, pos.Y + nextDir.Y}
-		return isLooping(nextPos, nextDir, grid, visited, newObstacle)
+	if grid[nextPos.Y][nextPos.X] == "#" || grid[nextPos.Y][nextPos.X] == "O" {
+		nextDir := dir
+		for i := 0; i < 4; i++ {
+			nextDir = rotate[nextDir]
+			newPos := Point{pos.X + nextDir.X, pos.Y + nextDir.Y}
+
+			if newPos.X < 0 || newPos.X >= len(grid[0]) || newPos.Y < 0 || newPos.Y >= len(grid) {
+				continue
+			}
+
+			if grid[newPos.Y][newPos.X] != "#" && grid[newPos.Y][newPos.X] != "O" {
+				return walk(newPos, nextDir, grid, visited, part2)
+			}
+		}
+		return false
 	}
 
-	return isLooping(nextPos, dir, grid, visited, newObstacle)
-}
-
-func isValidObstacle(grid Grid, point Point) bool{
-    if data.Grid[point.Y][point.X] == "#"{
-    return false
-  } 
-  if data.Grid[point.Y][point.X] == ""
+	return walk(nextPos, dir, grid, visited, part2)
 }
 
 func part1(data *Data) {
 	result := 0
 	visited := map[Point]Point{}
-	result = walk(data.Start, data.Dir, data.Grid, visited)
+	walk(data.Start, data.Dir, data.Grid, visited, false)
+	result = len(visited)
+	data.visited = &visited
 
 	fmt.Printf("Day 06: Part 1: %v\n", result)
 }
 
 func part2(data *Data) {
 	result := 0
-	visited := map[Point]Point{}
-	for y, row := range data.Grid {
-		for x := range row {
-			if isLooping(data.Start, data.Dir, data.Grid, visited, Point{x, y}) {
-			}
+	for pos := range *data.visited {
+		value := data.Grid[pos.Y][pos.X]
+		data.Grid[pos.Y][pos.X] = "O"
+		visited := map[Point]Point{}
+		if walk(data.Start, data.Dir, data.Grid, visited, true) {
+			result += 1
 		}
+		data.Grid[pos.Y][pos.X] = value
 	}
 	fmt.Printf("Day 06: Part 2: %v\n", result)
 }
