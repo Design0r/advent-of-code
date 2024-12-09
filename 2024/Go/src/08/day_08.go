@@ -95,6 +95,8 @@ func printGrid(grid []string, antinodes map[Point]struct{}) {
 		}
 		fmt.Println()
 	}
+
+	fmt.Println("\n=============================================================")
 }
 
 func part1(data *Data) {
