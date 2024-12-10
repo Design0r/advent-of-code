@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -12,8 +11,17 @@ import (
 )
 
 type Data struct {
-	Disk    []*int
-	FileMap map[int]int
+	Disk       []*int
+	FileMap    map[int]File
+	EmptySpace []*Empty
+}
+
+type File struct {
+	ID, Index, Size int
+}
+
+type Empty struct {
+	Index, Size int
 }
 
 func parse(path string) *Data {
@@ -25,17 +33,18 @@ func parse(path string) *Data {
 
 	disk := []*int{}
 	counter := 0
-	fileMap := map[int]int{}
+	fileMap := map[int]File{}
+	emptyMap := []*Empty{}
 	for i := 0; i <= len(stripped); i += 2 {
 		fileSize, err := strconv.Atoi(string(stripped[i]))
 		if err != nil {
 			log.Fatalf("failed to parse to int: %v", err)
 		}
 		idx := counter
+		fileMap[idx] = File{ID: idx, Index: len(disk), Size: fileSize}
 		for range fileSize {
 			disk = append(disk, &idx)
 		}
-		fileMap[idx] = fileSize
 		counter++
 
 		if i >= len(stripped)-1 {
@@ -46,12 +55,14 @@ func parse(path string) *Data {
 		if err != nil {
 			log.Fatalf("failed to parse to int: %v", err)
 		}
+		emptyMap = append(emptyMap, &Empty{Index: len(disk), Size: emptySpace})
 		for range emptySpace {
 			disk = append(disk, nil)
 		}
+
 	}
 
-	return &Data{Disk: disk, FileMap: fileMap}
+	return &Data{Disk: disk, FileMap: fileMap, EmptySpace: emptyMap}
 }
 
 func printDisk(disk []*int) {
@@ -64,6 +75,51 @@ func printDisk(disk []*int) {
 	}
 
 	fmt.Println()
+}
+
+func checksum(disk []*int) int {
+	result := 0
+	for i, val := range disk {
+		if val == nil {
+			continue
+		}
+		result += i * *val
+	}
+
+	return result
+}
+
+func findEmptySpace(emptySpace []*Empty, size int) (int, error) {
+	for i := 0; i < len(emptySpace); i++ {
+		space := emptySpace[i]
+		if space == nil || space.Size < size {
+			continue
+		}
+
+		idx := space.Index
+		sizeDiff := space.Size - size
+		if sizeDiff > 0 {
+			emptySpace[i] = &Empty{space.Index + size, sizeDiff}
+		} else {
+			emptySpace[i] = nil
+		}
+
+		return idx, nil
+	}
+
+	return 0, fmt.Errorf("No empty space found")
+}
+
+func deleteFile(file File, disk []*int) {
+	for i := file.Index; i < file.Index+file.Size; i++ {
+		disk[i] = nil
+	}
+}
+
+func insertFile(idx int, file File, disk []*int) {
+	for j := idx; j < idx+file.Size; j++ {
+		disk[j] = &file.ID
+	}
 }
 
 func part1(data *Data) {
@@ -93,106 +149,26 @@ func part1(data *Data) {
 		counter++
 	}
 
-	for i, val := range disk {
-		if val == nil {
-			break
-		}
-		result += i * *val
-	}
+	result = checksum(disk)
 
 	fmt.Printf("Day 09: Part 1: %v\n", result)
-}
-
-func findEmptySpace(disk []*int, size int) (int, error) {
-	i := 0
-	for i < len(disk) {
-		if disk[i] != nil {
-			i++
-			continue
-		}
-
-		sizeCount := 0
-		for sizeCount < size {
-			if disk[i+sizeCount] != nil || i+sizeCount >= len(disk)-1 {
-				break
-			}
-			sizeCount++
-		}
-
-		if sizeCount == size {
-			return i, nil
-		}
-		i++
-	}
-
-	return 0, fmt.Errorf("No empty space found")
-}
-
-func deleteFile(fileId int, size int, disk []*int) {
-	for i := len(disk) - 1; i >= 0; i-- {
-		val := disk[i]
-		if val == nil {
-			continue
-		}
-
-		if *val == fileId {
-			for j := 0; j < size; j++ {
-				if i-j < 0 {
-					return
-				}
-				disk[i-j] = nil
-			}
-		}
-
-	}
-}
-
-func insertFile(idx int, fileID int, fileSize int, disk []*int) {
-	for j := idx; j < idx+fileSize; j++ {
-		disk[j] = &fileID
-	}
-}
-
-func findFileIdx(disk []*int, fileId int) (int, error) {
-	for i, v := range disk {
-		if v != nil && *v == fileId {
-			return i, nil
-		}
-	}
-
-	return 0, errors.New("File not found")
 }
 
 func part2(data *Data) {
 	result := 0
 
-	disk := data.Disk
 	for i := len(data.FileMap) - 1; i >= 0; i-- {
-		fileSize := data.FileMap[i]
-		emptySpaceIdx, err := findEmptySpace(disk, fileSize)
-		if err != nil {
+		file := data.FileMap[i]
+		emptySpaceIdx, err := findEmptySpace(data.EmptySpace, file.Size)
+		if err != nil || emptySpaceIdx >= file.Index {
 			continue
 		}
 
-		fileId, err := findFileIdx(disk, i)
-		if err != nil {
-			continue
-		}
-
-		if emptySpaceIdx >= fileId {
-			continue
-		}
-
-		deleteFile(i, fileSize, disk)
-		insertFile(emptySpaceIdx, i, fileSize, disk)
+		deleteFile(file, data.Disk)
+		insertFile(emptySpaceIdx, file, data.Disk)
 	}
 
-	for i, val := range disk {
-		if val == nil {
-			continue
-		}
-		result += i * *val
-	}
+	result = checksum(data.Disk)
 
 	fmt.Printf("Day 09: Part 2: %v\n", result)
 }
