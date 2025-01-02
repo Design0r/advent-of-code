@@ -62,6 +62,9 @@ def perimeter(value: str, region: set[Point]) -> tuple[int, list[tuple[Point, Po
     return counter, sides
 
 
+        return 0
+
+    # Check all pairs of directions to see if they form a corner.
 def sides(edges: list[tuple[Point, Point]]) -> int:
     counter = 0
 

@@ -35,6 +35,17 @@ class Vec2(NamedTuple):
 
         return Vec2(self.x - other, self.y - other)
 
+    def __eq__(self, other: tuple[int, int] | Vec2) -> bool:
+        if isinstance(other, Vec2):
+            return self.x == other.x and self.y == other.y
+        if isinstance(other, tuple):
+            return self.x == other[0] and self.y == other[1]
+        else:
+            raise ValueError
+
+    def invert(self) -> Vec2:
+        return Vec2(self.x * -1, self.y * -1)
+
 
 def benchmark(f: Callable[..., Any]) -> Callable[..., None]:
     @wraps(f)
