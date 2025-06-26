@@ -1,3 +1,4 @@
+from collections import defaultdict
 from pathlib import Path
 
 from utils import benchmark
@@ -62,25 +63,46 @@ def perimeter(value: str, region: set[Point]) -> tuple[int, list[tuple[Point, Po
     return counter, sides
 
 
+def corners(dirs: list[Point]) -> int:
+    """
+    Count the number of corners, including inward-facing corners, based on the directions of edges.
+
+    Args:
+        dirs (list[Point]): A list of directions (edges) originating from a single point.
+
+    Returns:
+        int: The number of corners at the point, including inward-facing corners.
+    """
+    if len(dirs) < 2:
         return 0
 
     # Check all pairs of directions to see if they form a corner.
+    corners_count = 0
+    for i in range(len(dirs)):
+        for j in range(i + 1, len(dirs)):
+            dx1, dy1 = dirs[i]
+            dx2, dy2 = dirs[j]
+
+            # Check for perpendicularity (inward or outward corner)
+            if (dx1 * dx2 + dy1 * dy2) == 0:  # Dot product == 0
+                corners_count += 1
+
+    return corners_count
+
+
 def sides(edges: list[tuple[Point, Point]]) -> int:
-    counter = 0
+    histogram: dict[Point, list[Point]] = defaultdict(list)
 
-    for i, (p, d) in enumerate(edges):
-        if i + 1 >= len(edges):
-            counter += 1
-            return counter
-        next_p, next_d = edges[i + 1]
-        if d == next_d and (p[0] == next_p[0] or p[1] == next_p[1]):
-            continue
-        counter += 1
+    for pos, dir in edges:
+        histogram[pos].append(dir)
 
-    return counter
+    for k, v in histogram.items():
+        print(k, v)
+
+    return sum(corners(v) for v in histogram.values())
 
 
-@benchmark("finished in: ")
+@benchmark
 def part_1() -> None:
     result = 0
     visited: set[Point] = set()
@@ -95,7 +117,7 @@ def part_1() -> None:
     print(f"Day 12, Part 1: {result}")
 
 
-@benchmark("finished in: ")
+@benchmark
 def part_2() -> None:
     result = 0
     visited: set[Point] = set()

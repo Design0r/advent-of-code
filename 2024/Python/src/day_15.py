@@ -83,7 +83,7 @@ def move_big_boxes(grid: list[list[str]], pos: Vec2, dir: Vec2) -> Vec2:
     robot_pos = pos
     move = True
     steps = 0
-    boxes_to_move: list[Vec2] = []
+    boxes_to_move: list[str] = []
     while True:
         next_pos += dir
         if (
@@ -99,14 +99,9 @@ def move_big_boxes(grid: list[list[str]], pos: Vec2, dir: Vec2) -> Vec2:
 
         if dir.x != 0:
             if next_val == "[" or next_val == "]":
-                boxes_to_move.append(next_pos)
+                boxes_to_move.append(next_val)
         else:
-            if next_val == "[":
-                boxes_to_move.append(next_pos)
-                boxes_to_move.append(next_pos + DIRS[">"])
-            elif next_val == "]":
-                boxes_to_move.append(next_pos)
-                boxes_to_move.append(next_pos + DIRS["<"])
+            pass
 
         if move:
             robot_pos = next_pos
@@ -123,7 +118,7 @@ def move_big_boxes(grid: list[list[str]], pos: Vec2, dir: Vec2) -> Vec2:
     fill_pos = robot_pos
     for box in boxes_to_move:
         fill_pos += dir
-        grid[fill_pos.y][fill_pos.x] = "O"
+        grid[fill_pos.y][fill_pos.x] = box
 
     grid[pos.y][pos.x] = "."
     grid[robot_pos.y][robot_pos.x] = "@"
@@ -181,6 +176,11 @@ def part_2(data: Data) -> None:
     result = 0
     grid = parse_wide_grid(data.grid)
     print_grid(grid)
+    curr_pos = data.robot
+    for inst in data.instructions:
+        curr_pos = move_big_boxes(grid, curr_pos, DIRS[inst])
+        print(inst)
+        print_grid(grid)
     print(f"Day 15, Part 2: {result}")
 
 
