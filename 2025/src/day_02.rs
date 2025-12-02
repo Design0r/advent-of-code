@@ -1,32 +1,5 @@
 use std::fs;
 
-fn is_valid(val: &String) -> bool {
-    let middle = val.len() / 2;
-    let start = &val[..middle];
-    let end = &val[middle..];
-
-    return start != end;
-}
-
-fn is_valid2(val: &String) -> bool {
-    for idx in 1..val.len() {
-        let slice = &val[0..idx];
-        let count = val
-            .as_bytes()
-            .chunks(idx)
-            .filter(|&s| s == slice.as_bytes())
-            .count();
-
-        let (div, rem) = (val.len() / slice.len(), val.len() % slice.len());
-
-        if count == div && rem == 0 {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 fn part_1(lines: &Vec<(u64, u64)>) {
     let mut result: u64 = 0;
 
@@ -36,7 +9,12 @@ fn part_1(lines: &Vec<(u64, u64)>) {
             if id_str.len() % 2 != 0 {
                 continue;
             }
-            if !is_valid(&id_str) {
+
+            let middle = id_str.len() / 2;
+            let start = &id_str[..middle];
+            let end = &id_str[middle..];
+
+            if start == end {
                 result += id as u64;
             }
         }
@@ -50,8 +28,23 @@ fn part_2(lines: &Vec<(u64, u64)>) {
 
     for (start, end) in lines {
         for id in *start..=*end {
-            if !is_valid2(&id.to_string()) {
-                result += id as u64;
+            let id_str = id.to_string();
+            let half = id_str.len() / 2;
+            for limit in 0..half {
+                if id_str.len().rem_euclid(limit + 1) != 0 {
+                    continue;
+                }
+
+                let all_match = id_str[0..=limit]
+                    .chars()
+                    .cycle()
+                    .zip(id_str.chars())
+                    .all(|(a, b)| a == b);
+
+                if all_match {
+                    result += id;
+                    break;
+                }
             }
         }
     }
