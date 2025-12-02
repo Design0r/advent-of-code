@@ -32,7 +32,11 @@ fn part_1(lines: &Vec<(u64, u64)>) {
 
     for (start, end) in lines {
         for id in *start..=*end {
-            if !is_valid(&id.to_string()) {
+            let id_str = id.to_string();
+            if id_str.len() % 2 != 0 {
+                continue;
+            }
+            if !is_valid(&id_str) {
                 result += id as u64;
             }
         }
