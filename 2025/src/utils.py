@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from functools import wraps
 from time import perf_counter
-from typing import Any, Callable, NamedTuple
+from typing import Any, Callable, Generator, NamedTuple
 
 
 class Vec2(NamedTuple):
@@ -44,6 +44,30 @@ class Vec2(NamedTuple):
 
     def __hash__(self) -> int:
         return hash((self.x, self.y))
+
+    def neighbors_4(self) -> Generator[Vec2]:
+        for v in DIRS_4:
+            yield self + v
+
+    def neighbors_8(self) -> Generator[Vec2]:
+        for v in DIRS_8:
+            yield self + v
+
+    def is_out_of_bounds(self, bounds: Vec2) -> bool:
+        return self.x >= bounds.x or 0 > self.x or self.y < 0 or self.y >= bounds.y
+
+
+DIRS_4 = (Vec2(0, -1), Vec2(1, 0), Vec2(0, 1), Vec2(-1, 0))
+DIRS_8 = (
+    Vec2(0, -1),
+    Vec2(1, -1),
+    Vec2(1, 0),
+    Vec2(1, 1),
+    Vec2(0, 1),
+    Vec2(-1, 1),
+    Vec2(-1, 0),
+    Vec2(-1, -1),
+)
 
 
 def benchmark(f: Callable[..., Any]) -> Callable[..., None]:
