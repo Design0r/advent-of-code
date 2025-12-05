@@ -26,6 +26,8 @@ def print_grid(grid: list[str], store: list[Vec2]):
 
 def get_papers(grid: list[str] | list[list[str]]) -> list[Vec2]:
     papers_to_remove: list[Vec2] = []
+    len_line = len(grid[0])
+    len_grid = len(grid)
 
     for y, line in enumerate(grid):
         for x, char in enumerate(line):
@@ -35,7 +37,7 @@ def get_papers(grid: list[str] | list[list[str]]) -> list[Vec2]:
             pos = Vec2(x, y)
             paper_count = 0
             for n in pos.neighbors_8():
-                if n.x >= len(line) or 0 > n.x or n.y < 0 or n.y >= len(grid):
+                if n.x >= len_line or 0 > n.x or n.y < 0 or n.y >= len_grid:
                     continue
 
                 if grid[n.y][n.x] == "@":

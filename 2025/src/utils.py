@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from functools import wraps
 from time import perf_counter
-from typing import Any, Callable, Generator, NamedTuple
+from typing import Any, Callable, Generator
 
 
-class Vec2(NamedTuple):
+@dataclass(slots=True)
+class Vec2:
     x: int
     y: int
 
