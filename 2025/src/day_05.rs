@@ -1,15 +1,24 @@
-use std::{collections::HashSet, fs};
+use std::fs;
 
-fn part_1(ranges: &Vec<(u64, u64)>, items: &Vec<u64>) {
-    let mut result = 0;
+fn part_1(ranges: &Vec<(u64, u64)>, items: &mut impl Iterator<Item = u64>) {
+    // let mut result = 0;
+    //
+    // for (min, max) in ranges {
+    //     for item in &mut *items {
+    //         if *min <= item && item <= *max {
+    //             result += 1;
+    //         }
+    //     }
+    // }
 
-    for (min, max) in ranges {
-        for item in items {
-            if min <= item && item <= max {
-                result += 1;
-            }
-        }
-    }
+    let result = ranges.into_iter().fold(0, |acc, (min, max)| {
+        acc + items.fold(0, |sum, item| {
+            if *min <= item && item <= *max {
+                return sum + 1;
+            };
+            return sum;
+        })
+    });
     println!("Day 05, Part 1: {}", result);
 }
 
@@ -59,15 +68,10 @@ fn main() {
 
     let merged = merge_ranges(ranges);
 
-    let items: Vec<u64> = lines[1]
+    let mut items = lines[1]
         .split_whitespace()
-        .map(|line| {
-            let mut split = line.split("-");
-            let num = split.next().unwrap().parse::<u64>().unwrap();
-            return num;
-        })
-        .collect();
+        .map(|line| line.parse::<u64>().unwrap());
 
-    part_1(&merged, &items);
+    part_1(&merged, &mut items);
     part_2(&merged);
 }
