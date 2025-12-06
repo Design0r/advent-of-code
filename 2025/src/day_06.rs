@@ -1,64 +1,49 @@
 use std::fs;
 
-fn part_1(lines: &Vec<&str>, signs: &Vec<&str>) {
-    let nums: Vec<u64> = lines[0..lines.len() - 1]
-        .iter()
-        .flat_map(|l| {
-            l.split_whitespace()
-                .filter_map(|num| num.parse::<u64>().ok())
-                .collect::<Vec<u64>>()
-        })
-        .collect();
+fn part_1(lines: &[&str], signs: &[&str]) {
+    let rows = lines.len() - 1;
+    let cols = signs.len();
 
-    let cols = lines[0].split_whitespace().count();
+    let mut results: Vec<u64> = vec![0; cols];
 
-    let result = (0..cols).fold(0 as u64, |acc, x| {
-        acc + (0..lines.len() - 1).fold(0 as u64, |a, y| {
-            let idx = y * cols + x;
-            let num = nums[idx];
-            let sign = signs[x];
-            let is_first_row = y == 0;
+    for (row_idx, line) in lines[..rows].iter().enumerate() {
+        for (col_idx, num_str) in line.split_whitespace().enumerate() {
+            let num = num_str.parse::<u64>().unwrap();
 
-            if is_first_row {
-                return num;
+            if row_idx == 0 {
+                results[col_idx] = num;
+            } else {
+                match signs[col_idx] {
+                    "+" => results[col_idx] += num,
+                    "*" => results[col_idx] *= num,
+                    _ => unreachable!(),
+                }
             }
+        }
+    }
 
-            match sign {
-                "+" => a + num,
-                "*" => a * num,
-                _ => unreachable!(),
-            }
-        })
-    });
-
-    println!("Day 06, Part 1: {}", result);
+    println!("Day 06, Part 1: {}", results.iter().sum::<u64>());
 }
 
-fn part_2(lines: &Vec<&str>, signs: &Vec<&str>) {
-    let chars: Vec<Vec<char>> = lines[0..lines.len() - 1]
-        .iter()
-        .map(|l| l.chars().collect())
-        .collect();
-
+fn part_2(lines: &[&str], signs: &[&str]) {
     let mut result = 0;
     let mut block = 0;
     let mut signs_iter = signs.iter();
     let mut curr_sign = signs_iter.next();
     for x in 0..lines[0].len() {
-        if let Some(col) = parse_col(x, &chars) {
-            match curr_sign {
-                Some(s) => match *s {
-                    "+" => block += col,
+        if let Some(col) = parse_col(x, lines) {
+            if let Some(s) = curr_sign {
+                match *s {
+                    "+" => block += col as u64,
                     "*" => {
                         if block == 0 {
-                            block = col
+                            block = col as u64
                         } else {
-                            block *= col
+                            block *= col as u64
                         }
                     }
-                    _ => {}
-                },
-                None => (),
+                    _ => unreachable!(),
+                }
             }
         } else {
             result += block;
@@ -66,29 +51,26 @@ fn part_2(lines: &Vec<&str>, signs: &Vec<&str>) {
             curr_sign = signs_iter.next();
         }
     }
-
     result += block;
 
     println!("Day 06, Part 2: {}", result);
 }
 
-fn parse_col(col: usize, grid: &Vec<Vec<char>>) -> Option<u64> {
-    let mut str: Vec<char> = Vec::new();
-    for x in 0..grid.len() {
-        let item = grid[x][col];
-        if item.is_whitespace() {
+fn parse_col(col: usize, lines: &[&str]) -> Option<u16> {
+    let mut value: u16 = 0;
+
+    for &line in &lines[..lines.len() - 1] {
+        let bytes = line.as_bytes();
+        let b = bytes[col];
+
+        if b.is_ascii_whitespace() {
             continue;
         }
-        str.push(item)
+
+        value = value * 10 + (b - b'0') as u16;
     }
 
-    if str.len() == 0 {
-        return None;
-    }
-
-    let coll: String = str.into_iter().collect();
-
-    Some(coll.parse::<u64>().unwrap())
+    if value > 0 { Some(value) } else { None }
 }
 
 fn main() {
