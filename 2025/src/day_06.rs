@@ -1,23 +1,23 @@
 use std::fs;
 
 fn part_1(lines: &[&str], signs: &[&str]) {
-    let rows = lines.len() - 1;
     let cols = signs.len();
 
     let mut results: Vec<u64> = vec![0; cols];
 
-    for (row_idx, line) in lines[..rows].iter().enumerate() {
+    for line in &lines[..lines.len() - 1] {
         for (col_idx, num_str) in line.split_whitespace().enumerate() {
             let num = num_str.parse::<u64>().unwrap();
 
-            if row_idx == 0 {
+            if results[col_idx] == 0 {
                 results[col_idx] = num;
-            } else {
-                match signs[col_idx] {
-                    "+" => results[col_idx] += num,
-                    "*" => results[col_idx] *= num,
-                    _ => unreachable!(),
-                }
+                continue;
+            }
+
+            match signs[col_idx] {
+                "+" => results[col_idx] += num,
+                "*" => results[col_idx] *= num,
+                _ => unreachable!(),
             }
         }
     }
