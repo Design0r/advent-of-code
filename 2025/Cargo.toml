@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+glam = "0.30.9"
 
 [profile.release]
 opt-level = 3
@@ -31,3 +32,7 @@ name = "day_05"
 [[bin]]
 name = "day_06"
 path = "src/day_06.rs"
+
+[[bin]]
+name = "day_07"
+path = "src/day_07.rs"

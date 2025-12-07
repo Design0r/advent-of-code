@@ -1,4 +1,4 @@
-use std::fs;
+use std::{fs, time::Instant};
 
 fn part_1(lines: &[&str], signs: &[&str]) {
     let cols = signs.len();
@@ -74,10 +74,14 @@ fn parse_col(col: usize, lines: &[&str]) -> Option<u16> {
 }
 
 fn main() {
+    let start = Instant::now();
+
     let file = fs::read_to_string("inputs/day_06.txt").expect("error reading file");
     let lines: Vec<&str> = file.lines().collect();
     let signs: Vec<&str> = lines.last().unwrap().split_whitespace().collect();
 
     part_1(&lines, &signs);
     part_2(&lines, &signs);
+
+    println!("Finished in {}µs", start.elapsed().as_micros());
 }
