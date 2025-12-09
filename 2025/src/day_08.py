@@ -1,12 +1,14 @@
+from dataclasses import dataclass
 from functools import reduce
 from itertools import combinations
 from pathlib import Path
-from typing import NamedTuple
 
 from utils import Vec3, benchmark
 
 
-class Data(NamedTuple):
+@dataclass(slots=True)
+class Data:
+    edges: list[tuple[int, Vec3, Vec3]]
     boxes: list[Vec3]
 
 
@@ -14,8 +16,17 @@ class Data(NamedTuple):
 def parse() -> Data:
     with open(Path(__file__).parent.parent / "inputs/day_08.txt") as f:
         file = f.read().strip().splitlines()
-        boxes = [Vec3(*[int(n) for n in line.split(",")]) for line in file]
-    return Data(boxes)
+
+    boxes = [Vec3(*[int(n) for n in line.split(",")]) for line in file]
+    edges: list[tuple[int, Vec3, Vec3]] = []
+
+    for a, b in combinations(boxes, 2):
+        distance = a.distance_squared(b)
+        edges.append((distance, a, b))
+
+    edges.sort(key=lambda e: e[0])
+
+    return Data(edges, boxes)
 
 
 type Connection = tuple[Vec3, Vec3]
@@ -23,18 +34,8 @@ type Connection = tuple[Vec3, Vec3]
 
 @benchmark
 def part_1(data: Data) -> None:
-    boxes = data.boxes
-
-    edges: list[tuple[int, Vec3, Vec3]] = []
-
-    for a, b in combinations(boxes, 2):
-        d2 = a.distance_squared(b)
-        edges.append((d2, a, b))
-
-    edges.sort(key=lambda e: e[0])
-
     circuits: list[set[Vec3]] = []
-    for _, a, b in edges[:1000]:
+    for _, a, b in data.edges[:1000]:
         ca = cb = None
 
         for c in circuits:
@@ -67,15 +68,7 @@ def part_1(data: Data) -> None:
 @benchmark
 def part_2(data: Data) -> None:
     result = 0
-    boxes = data.boxes
-
-    edges: list[tuple[int, Vec3, Vec3]] = []
-
-    for a, b in combinations(boxes, 2):
-        distance = a.distance_squared(b)
-        edges.append((distance, a, b))
-
-    edges.sort(key=lambda e: e[0])
+    edges = data.edges
 
     circuits: list[set[Vec3]] = []
     for idx, (_, a, b) in enumerate(edges):
@@ -87,7 +80,7 @@ def part_2(data: Data) -> None:
             if b in c:
                 cb = c
 
-        if len(circuits) == 1 and len(circuits[0]) == len(boxes):
+        if circuits and len(circuits[0]) == len(data.boxes):
             _, x, y = edges[idx - 1]
             result = x.x * y.x
             break
