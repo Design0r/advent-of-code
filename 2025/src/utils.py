@@ -58,6 +58,9 @@ class Vec2:
     def is_out_of_bounds(self, bounds: Vec2) -> bool:
         return self.x >= bounds.x or 0 > self.x or self.y < 0 or self.y >= bounds.y
 
+    def distance_squared(self, other: Vec2) -> int:
+        return pow(self.x - other.x, 2) + pow(self.y - other.y, 2)
+
 
 @dataclass(slots=True)
 class Vec3:
@@ -108,6 +111,16 @@ class Vec3:
             + pow(self.z - other.z, 2)
         )
 
+    def is_out_of_bounds(self, bounds: Vec3) -> bool:
+        return (
+            self.x >= bounds.x
+            or 0 > self.x
+            or self.y < 0
+            or self.y >= bounds.y
+            or self.z < 0
+            or self.z >= bounds.z
+        )
+
 
 DIRS_4 = (Vec2(0, -1), Vec2(1, 0), Vec2(0, 1), Vec2(-1, 0))
 DIRS_8 = (
@@ -124,7 +137,7 @@ DIRS_8 = (
 
 def benchmark(f: Callable[..., Any]) -> Callable[..., None]:
     @wraps(f)
-    def wrapper(*args: Any, **kwargs: Any) -> None:
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         start_time = perf_counter()
         res = f(*args, **kwargs)
         stop_time = perf_counter()

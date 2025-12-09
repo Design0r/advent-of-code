@@ -67,6 +67,43 @@ def part_1(data: Data) -> None:
 @benchmark
 def part_2(data: Data) -> None:
     result = 0
+    boxes = data.boxes
+
+    edges: list[tuple[int, Vec3, Vec3]] = []
+
+    for a, b in combinations(boxes, 2):
+        distance = a.distance_squared(b)
+        edges.append((distance, a, b))
+
+    edges.sort(key=lambda e: e[0])
+
+    circuits: list[set[Vec3]] = []
+    for idx, (_, a, b) in enumerate(edges):
+        ca = cb = None
+
+        for c in circuits:
+            if a in c:
+                ca = c
+            if b in c:
+                cb = c
+
+        if len(circuits) == 1 and len(circuits[0]) == len(boxes):
+            _, x, y = edges[idx - 1]
+            result = x.x * y.x
+            break
+
+        if not ca and not cb:
+            circuits.append({a, b})
+        elif ca and not cb:
+            ca.add(b)
+        elif not ca and cb:
+            cb.add(a)
+        elif ca is cb:
+            continue
+        elif ca and cb:
+            ca.update(cb)
+            circuits.remove(cb)
+
     print(f"Day 08, Part 2: {result}")
 
 
