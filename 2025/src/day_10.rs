@@ -1,3 +1,4 @@
+use rustc_hash::FxHashSet;
 use std::{collections::HashSet, fs, time::Instant, vec};
 
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};
@@ -8,25 +9,34 @@ fn part_1(points: &[Machine]) {
     println!("Day 10, Part 1: {}", result);
 }
 
-fn push_button_jolt(joltage: &[u32], buttons: &[u32]) -> Vec<u32> {
-    let mut jlt = joltage.to_owned();
+fn push_button_jolt(joltage: &[u16], buttons: &[u16]) -> Box<[u16]> {
+    let mut jlt = joltage.to_vec();
     for b in buttons {
         jlt[*b as usize] += 1;
     }
 
-    jlt
+    jlt.into_boxed_slice()
 }
 
-fn calc(machine: &Machine) -> u32 {
-    let mut button_presses = 0;
-    let mut curr_joltage: HashSet<Vec<u32>> = HashSet::new();
-    curr_joltage.insert(vec![0 as u32; machine.joltage.len()]);
+fn calc(machine: &Machine) -> u16 {
+    let mut button_presses = 0 as u16;
+    let mut curr_joltage: FxHashSet<Box<[u16]>> = FxHashSet::default();
+    curr_joltage.insert(vec![0 as u16; machine.joltage.len()].into_boxed_slice());
 
     loop {
-        let mut joltages: HashSet<Vec<u32>> = HashSet::new();
+        let mut joltages: FxHashSet<Box<[u16]>> = FxHashSet::with_capacity_and_hasher(
+            curr_joltage.len() * machine.buttons.len(),
+            Default::default(),
+        );
         for jlt in &curr_joltage {
             for btn in &machine.buttons {
                 let new = push_button_jolt(jlt, btn);
+
+                if new == machine.joltage {
+                    println!("completed {machine:?}");
+                    return button_presses;
+                }
+
                 if new.iter().zip(&machine.joltage).any(|(a, b)| a > b) {
                     continue;
                 }
@@ -35,35 +45,36 @@ fn calc(machine: &Machine) -> u32 {
         }
 
         curr_joltage = joltages;
+        println!("{}", curr_joltage.len());
 
         button_presses += 1;
-
-        if curr_joltage.contains(&machine.joltage) {
-            println!("completed {machine:?}");
-            return button_presses;
-        }
     }
 }
 
 fn part_2(machines: &[Machine]) {
-    let result: u32 = machines.par_iter().map(|m| calc(m)).sum();
+    let result: u16 = machines.par_iter().map(|m| calc(m)).sum();
 
     println!("Day 10, Part 2: {}", result);
 }
 
 #[derive(Debug)]
 struct Machine {
-    buttons: Vec<Vec<u32>>,
-    joltage: Vec<u32>,
+    buttons: Vec<Vec<u16>>,
+    joltage: Box<[u16]>,
 }
 
 impl Machine {
-    fn new(buttons: Vec<Vec<u32>>, joltage: Vec<u32>) -> Self {
+    fn new(buttons: Vec<Vec<u16>>, joltage: Box<[u16]>) -> Self {
         Self { buttons, joltage }
     }
 }
 
 fn main() {
+    rayon::ThreadPoolBuilder::new()
+        .num_threads(2)
+        .build_global()
+        .unwrap();
+
     let start = Instant::now();
 
     let file = fs::read_to_string("inputs/day_10.txt").expect("error reading file");
@@ -73,24 +84,24 @@ fn main() {
             let split: Vec<&str> = l.split_whitespace().collect();
 
             let last = split.last().unwrap();
-            let joltage: Vec<u32> = last[1..last.len() - 1]
+            let joltage: Vec<u16> = last[1..last.len() - 1]
                 .split(",")
-                .map(|n| n.parse::<u32>().unwrap())
+                .map(|n| n.parse::<u16>().unwrap())
                 .collect();
 
-            let buttons: Vec<Vec<u32>> = split[1..split.len() - 1]
+            let buttons: Vec<Vec<u16>> = split[1..split.len() - 1]
                 .into_iter()
                 .map(|b| {
                     let buttons = b[1..b.len() - 1]
                         .split(",")
-                        .map(|n| n.parse::<u32>().unwrap())
+                        .map(|n| n.parse::<u16>().unwrap())
                         .collect();
 
                     buttons
                 })
                 .collect();
 
-            Machine::new(buttons, joltage)
+            Machine::new(buttons, joltage.into_boxed_slice())
         })
         .collect();
 
